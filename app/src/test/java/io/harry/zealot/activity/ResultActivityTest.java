@@ -161,7 +161,7 @@ public class ResultActivityTest {
         IntentAssert originalIntentAssert = new IntentAssert(originalIntent);
 
         assertThat(originalIntentAssert.hasAction(Intent.ACTION_SEND));
-        assertThat(originalIntentAssert.hasExtra(Intent.EXTRA_TEXT, "http://placeholder.com?score=80"));
+        assertThat(originalIntentAssert.hasExtra(Intent.EXTRA_TEXT, "https://harryzealot.herokuapp.com?score=80&nickName=사용자"));
         assertThat(originalIntentAssert.hasType("text/plain"));
     }
 }

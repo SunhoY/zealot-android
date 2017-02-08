@@ -62,9 +62,11 @@ public class ResultActivity extends ZealotBaseActivity {
 
     @OnClick(R.id.share_sns)
     public void onShareSNSClick() {
+        String serverURL = getString(R.string.server_url);
+
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_TEXT, "http://placeholder.com?score=" + ajaeScoreText);
+        intent.putExtra(Intent.EXTRA_TEXT, serverURL + "?score=" + ajaeScoreText + "&nickName=사용자");
 
         Intent chooser = Intent.createChooser(intent, getString(R.string.share_ajae_power));
 

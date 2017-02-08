@@ -23,4 +23,5 @@
     <string name="next">다음</string>
     <string name="previous">이전</string>
     <string name="result">결과</string>
+    <string name="server_url">https://harryzealot.herokuapp.com</string>
 </resources>
