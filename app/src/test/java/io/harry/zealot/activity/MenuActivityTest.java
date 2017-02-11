@@ -225,4 +225,15 @@ public class MenuActivityTest {
 
         assertThat(ShadowToast.getTextOfLatestToast()).isEqualTo("업로드 완료");
     }
+
+    @Test
+    public void onAdminClick_launchesVerificationActivity() throws Exception {
+        subject.onAdminClick();
+
+        Intent nextStartedActivity = shadowOf(application).getNextStartedActivity();
+
+        IntentAssert intentAssert = new IntentAssert(nextStartedActivity);
+
+        intentAssert.hasComponent(application, VerificationActivity.class);
+    }
 }

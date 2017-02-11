@@ -67,6 +67,13 @@ public class MenuActivity extends ZealotBaseActivity {
         }
     }
 
+    @OnClick(R.id.admin)
+    public void onAdminClick() {
+        Intent intent = new Intent(this, VerificationActivity.class);
+
+        startActivity(intent);
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         //todo: not tested
@@ -107,9 +114,9 @@ public class MenuActivity extends ZealotBaseActivity {
 
         Bitmap scaledBitmap = bitmapHelper.scaleBitmap(bitmap, size.width, size.height);
 
-        gagService.uploadGag(scaledBitmap, new ServiceCallback() {
+        gagService.uploadGag(scaledBitmap, new ServiceCallback<Void>() {
             @Override
-            public void onSuccess(Object result) {
+            public void onSuccess(Void aVoid) {
                 Toast.makeText(MenuActivity.this, R.string.upload_complete, Toast.LENGTH_LONG).show();
             }
         });

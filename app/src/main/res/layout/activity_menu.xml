@@ -44,4 +44,13 @@
         android:layout_centerHorizontal="true"
         />
 
+    <Button
+        android:id="@+id/admin"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentEnd="true"
+        android:layout_above="@id/upload_button"
+        android:background="@android:color/transparent"
+        />
+
 </RelativeLayout>
