@@ -2,4 +2,5 @@
 <resources>
     <integer name="ajae_full_power">1000</integer>
     <integer name="gag_count">10</integer>
+    <integer name="verification_chunk_size">30</integer>
 </resources>

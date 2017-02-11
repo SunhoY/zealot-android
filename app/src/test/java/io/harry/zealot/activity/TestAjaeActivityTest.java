@@ -52,6 +52,7 @@ import io.harry.zealot.wrapper.GagPagerAdapterWrapper;
 import static android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.eq;
@@ -148,15 +149,20 @@ public class TestAjaeActivityTest {
     }
 
     @Test
-    public void onCreate_callGagServiceToFetchGagImageFileNames() throws Exception {
+    public void onCreate_callGagServiceToFetchNumberOfGagImageFileNames() throws Exception {
         int requestCount = application.getResources().getInteger(R.integer.gag_count);
 
-        verify(mockGagService).getGagImageFileNames(eq(requestCount), Matchers.<ServiceCallback<List<String>>>any());
+        verify(mockGagService).getGagImageFileNames(eq(requestCount), anyBoolean(), Matchers.<ServiceCallback<List<String>>>any());
+    }
+
+    @Test
+    public void onCreate_callGagServiceToFetchVerifiedGagImageFileNames() throws Exception {
+        verify(mockGagService).getGagImageFileNames(anyInt(), eq(true), Matchers.<ServiceCallback<List<String>>>any());
     }
 
     @Test
     public void afterFetchingGagImageFileNames_callsGagServiceToGetImageURLs() throws Exception {
-        verify(mockGagService).getGagImageFileNames(anyInt(), stringListServiceCallbackCaptor.capture());
+        verify(mockGagService).getGagImageFileNames(anyInt(), anyBoolean(), stringListServiceCallbackCaptor.capture());
 
         stringListServiceCallbackCaptor.getValue().onSuccess(Arrays.asList("gag1.png", "gag2.png"));
 
@@ -166,7 +172,7 @@ public class TestAjaeActivityTest {
 
     @Test
     public void onCreate_getPagerAdapterWithRequestSizeOfFragments() throws Exception {
-        verify(mockGagService).getGagImageFileNames(anyInt(), stringListServiceCallbackCaptor.capture());
+        verify(mockGagService).getGagImageFileNames(anyInt(), anyBoolean(), stringListServiceCallbackCaptor.capture());
 
         stringListServiceCallbackCaptor.getValue().onSuccess(Arrays.asList("gag1.png", "gag2.png"));
 
@@ -187,7 +193,7 @@ public class TestAjaeActivityTest {
 
     @Test
     public void onCreate_setAdapterOnViewPager() throws Exception {
-        verify(mockGagService).getGagImageFileNames(anyInt(), stringListServiceCallbackCaptor.capture());
+        verify(mockGagService).getGagImageFileNames(anyInt(), anyBoolean(), stringListServiceCallbackCaptor.capture());
 
         stringListServiceCallbackCaptor.getValue().onSuccess(Arrays.asList("gag1.png", "gag2.png"));
 

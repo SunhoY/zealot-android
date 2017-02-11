@@ -105,7 +105,7 @@ public class TestAjaeActivity extends ZealotBaseActivity implements FaceListener
         testAjaePreview.setCameraSource(cameraSource);
 
         int requestCount = getResources().getInteger(R.integer.gag_count);
-        gagService.getGagImageFileNames(requestCount, new ServiceCallback<List<String>>() {
+        gagService.getGagImageFileNames(requestCount, true, new ServiceCallback<List<String>>() {
             @Override
             public void onSuccess(List<String> result) {
                 getGagImageURLsWithImageNames(result, new ServiceCallback<List<Uri>>() {

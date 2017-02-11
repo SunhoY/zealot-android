@@ -36,10 +36,10 @@ public class GagService {
         ((ZealotApplication) context).getZealotComponent().inject(this);
     }
 
-    public void getGagImageFileNames(int requestCount, final ServiceCallback<List<String>> serviceCallback) {
+    public void getGagImageFileNames(int requestCount, boolean verified, final ServiceCallback<List<String>> serviceCallback) {
         DatabaseReference gagReference = firebaseHelper.getDatabaseReference("gags");
 
-        Query query = gagReference.limitToLast(requestCount);
+        Query query = gagReference.orderByChild("verified").equalTo(verified).limitToLast(requestCount);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -108,9 +108,5 @@ public class GagService {
                 serviceCallback.onSuccess(null);
             }
         });
-    }
-
-    public void getUnverifiedGagImages(ServiceCallback<List<String>> any) {
-
     }
 }

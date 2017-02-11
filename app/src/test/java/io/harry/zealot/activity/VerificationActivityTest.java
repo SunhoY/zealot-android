@@ -34,10 +34,13 @@ import io.harry.zealot.wrapper.GagPagerAdapterWrapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.RuntimeEnvironment.application;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class)
@@ -69,12 +72,19 @@ public class VerificationActivityTest {
 
         ((TestZealotApplication)subject.getApplication()).getZealotComponent().inject(this);
 
-        verify(mockGagService).getUnverifiedGagImages(stringListServiceCallbackCaptor.capture());
+        verify(mockGagService).getGagImageFileNames(anyInt(), anyBoolean(), stringListServiceCallbackCaptor.capture());
     }
 
     @Test
     public void onCreate_callsGagServiceToFetchUnverifiedGagImages() throws Exception {
-        verify(mockGagService).getUnverifiedGagImages(Matchers.<ServiceCallback<List<String>>>any());
+        verify(mockGagService).getGagImageFileNames(anyInt(), eq(false), Matchers.<ServiceCallback<List<String>>>any());
+    }
+
+    @Test
+    public void onCreate_callsGagServiceToFetchNumberOfGagImages() throws Exception {
+        int verificationChunkSize = application.getResources().getInteger(R.integer.verification_chunk_size);
+
+        verify(mockGagService).getGagImageFileNames(eq(verificationChunkSize), anyBoolean(), Matchers.<ServiceCallback<List<String>>>any());
     }
 
     @Test

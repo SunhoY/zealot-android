@@ -34,7 +34,8 @@ public class VerificationActivity extends ZealotBaseActivity {
         setContentView(R.layout.activity_verification);
         ButterKnife.bind(this);
 
-        gagService.getUnverifiedGagImages(new ServiceCallback<List<String>>() {
+        int chunkSize = getResources().getInteger(R.integer.verification_chunk_size);
+        gagService.getGagImageFileNames(chunkSize, false, new ServiceCallback<List<String>>() {
             @Override
             public void onSuccess(List<String> result) {
                 gagService.getGagImageUris(result, new ServiceCallback<List<Uri>>() {

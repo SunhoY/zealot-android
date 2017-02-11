@@ -41,6 +41,7 @@ import io.harry.zealot.helper.FirebaseHelper;
 import io.harry.zealot.model.Gag;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
@@ -56,6 +57,7 @@ public class GagServiceTest {
     private static final long MILLIS_2017_06_19 = 1497873600000L;
     private static final String NO_MATTER = "no matter";
     private static final int ANY_COUNT = 9;
+    private static final boolean ANY_VERIFIED = true;
 
     @Inject
     FirebaseHelper mockFirebaseHelper;
@@ -110,25 +112,44 @@ public class GagServiceTest {
         subject = new GagService(RuntimeEnvironment.application);
 
         when(mockFirebaseHelper.getDatabaseReference(anyString())).thenReturn(mockDatabaseReference);
+        when(mockDatabaseReference.orderByChild(anyString())).thenReturn(mockQuery);
+        when(mockQuery.equalTo(anyBoolean())).thenReturn(mockQuery);
+        when(mockQuery.limitToLast(anyInt())).thenReturn(mockQuery);
     }
 
     @Test
     public void getGagImageFileNames_getsGagsReferenceFromFirebaseHelper() throws Exception {
-        when(mockDatabaseReference.limitToLast(anyInt())).thenReturn(mockDatabaseReference);
-
-        subject.getGagImageFileNames(ANY_COUNT, mockStringListServiceCallback);
+        subject.getGagImageFileNames(ANY_COUNT, ANY_VERIFIED, mockStringListServiceCallback);
 
         verify(mockFirebaseHelper).getDatabaseReference("gags");
     }
 
     @Test
+    public void getGagImageFileNames_queriesOrderingByVerifiedField() throws Exception {
+        subject.getGagImageFileNames(ANY_COUNT, ANY_VERIFIED, mockStringListServiceCallback);
+
+        verify(mockDatabaseReference).orderByChild("verified");
+    }
+
+    @Test
+    public void getGagImageFileNames_queriesVerifiedValueIsTrue() throws Exception {
+        subject.getGagImageFileNames(ANY_COUNT, true, mockStringListServiceCallback);
+
+        verify(mockQuery).equalTo(true);
+    }
+
+    @Test
+    public void getGagImageFileNames_queriesVerifiedValueIsFalse() throws Exception {
+        subject.getGagImageFileNames(ANY_COUNT, false, mockStringListServiceCallback);
+
+        verify(mockQuery).equalTo(false);
+    }
+
+    @Test
     public void getGagImageFileNames_queriesLastNumberOfItemsFromDatabaseReference() throws Exception {
-        when(mockFirebaseHelper.getDatabaseReference("gags")).thenReturn(mockDatabaseReference);
-        when(mockDatabaseReference.limitToLast(eq(10))).thenReturn(mockDatabaseReference);
+        subject.getGagImageFileNames(10, ANY_VERIFIED, mockStringListServiceCallback);
 
-        subject.getGagImageFileNames(10, mockStringListServiceCallback);
-
-        verify(mockDatabaseReference).limitToLast(10);
+        verify(mockQuery).limitToLast(10);
     }
 
     @Test
@@ -136,19 +157,18 @@ public class GagServiceTest {
         when(mockFirebaseHelper.getDatabaseReference("gags")).thenReturn(mockDatabaseReference);
         when(mockDatabaseReference.limitToLast(anyInt())).thenReturn(mockQuery);
 
-        subject.getGagImageFileNames(10, mockStringListServiceCallback);
+        subject.getGagImageFileNames(ANY_COUNT, ANY_VERIFIED, mockStringListServiceCallback);
 
         verify(mockQuery).addListenerForSingleValueEvent(any(ValueEventListener.class));
     }
 
     @Test
     public void getGagImageFileNames_extractsFileNamesFromDataSnapshot() throws Exception {
-        when(mockDatabaseReference.limitToLast(anyInt())).thenReturn(mockDatabaseReference);
         DataSnapshot mockDataSnapshot = createMockDataSnapshotForJPGImages(3);
 
-        subject.getGagImageFileNames(ANY_COUNT, mockStringListServiceCallback);
+        subject.getGagImageFileNames(ANY_COUNT, ANY_VERIFIED, mockStringListServiceCallback);
 
-        verify(mockDatabaseReference).addListenerForSingleValueEvent(valueEventListenerCaptor.capture());
+        verify(mockQuery).addListenerForSingleValueEvent(valueEventListenerCaptor.capture());
 
         valueEventListenerCaptor.getValue().onDataChange(mockDataSnapshot);
 
@@ -215,7 +235,7 @@ public class GagServiceTest {
                         Uri.parse("http://myhost/1.jpg")));
     }
 
-    private void setFirebaseMocksForUploadToStroage(String referenceName, String childName) {
+    private void setFirebaseMocksForUploadToStorage(String referenceName, String childName) {
         when(mockFirebaseHelper.getStorageReference(NO_MATTER.equals(referenceName) ? anyString() : referenceName))
                 .thenReturn(mockStorageReference);
         when(mockStorageReference.child(NO_MATTER.equals(childName) ? anyString() : childName))
@@ -226,7 +246,7 @@ public class GagServiceTest {
 
     @Test
     public void uploadGag_getsStorageInstanceFromFirebaseHelper() throws Exception {
-        setFirebaseMocksForUploadToStroage(NO_MATTER, NO_MATTER);
+        setFirebaseMocksForUploadToStorage(NO_MATTER, NO_MATTER);
 
         subject.uploadGag(mockBitmap, mockVoidServiceCallback);
 
@@ -235,7 +255,7 @@ public class GagServiceTest {
 
     @Test
     public void uploadGag_createsImageReferenceWithTimestamp() throws Exception {
-        setFirebaseMocksForUploadToStroage(NO_MATTER, "1497873600000.jpg");
+        setFirebaseMocksForUploadToStorage(NO_MATTER, "1497873600000.jpg");
 
         subject.uploadGag(mockBitmap, mockVoidServiceCallback);
 
@@ -244,7 +264,7 @@ public class GagServiceTest {
 
     @Test
     public void uploadGag_compressBitmapIntoByteArrayOutputStream() throws Exception {
-        setFirebaseMocksForUploadToStroage(NO_MATTER, NO_MATTER);
+        setFirebaseMocksForUploadToStorage(NO_MATTER, NO_MATTER);
 
         subject.uploadGag(mockBitmap, mockVoidServiceCallback);
 
@@ -254,7 +274,7 @@ public class GagServiceTest {
 
     @Test
     public void uploadGag_putImageByteArrayToImageReference() throws Exception {
-        setFirebaseMocksForUploadToStroage(NO_MATTER, NO_MATTER);
+        setFirebaseMocksForUploadToStorage(NO_MATTER, NO_MATTER);
 
         subject.uploadGag(mockBitmap, mockVoidServiceCallback);
 
@@ -264,7 +284,7 @@ public class GagServiceTest {
 
     @Test
     public void uploadGag_addOnSuccessListenerToUploadTask() throws Exception {
-        setFirebaseMocksForUploadToStroage(NO_MATTER, NO_MATTER);
+        setFirebaseMocksForUploadToStorage(NO_MATTER, NO_MATTER);
 
         subject.uploadGag(mockBitmap, mockVoidServiceCallback);
 
@@ -272,7 +292,7 @@ public class GagServiceTest {
     }
 
     private void assumeImageHasBeenUploaded(ArgumentCaptor<OnSuccessListener<UploadTask.TaskSnapshot>> onSuccessListenerUploadCaptor) {
-        setFirebaseMocksForUploadToStroage(NO_MATTER, NO_MATTER);
+        setFirebaseMocksForUploadToStorage(NO_MATTER, NO_MATTER);
 
         subject.uploadGag(mockBitmap, mockVoidServiceCallback);
 
