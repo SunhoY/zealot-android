@@ -23,7 +23,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.ZealotBaseActivity"/>
-        <activity android:name=".activity.MenuActivity"/>
+        <activity android:name=".activity.MenuActivity"
+            android:screenOrientation="portrait"
+            />
         <activity android:name=".activity.TestAjaeActivity"
             android:screenOrientation="portrait"
             />
