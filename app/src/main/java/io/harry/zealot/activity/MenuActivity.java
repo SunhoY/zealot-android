@@ -69,7 +69,7 @@ public class MenuActivity extends ZealotBaseActivity {
 
     @OnClick(R.id.admin)
     public void onAdminClick() {
-        Intent intent = new Intent(this, VerificationActivity.class);
+        Intent intent = new Intent(this, CheckAdminActivity.class);
 
         startActivity(intent);
     }

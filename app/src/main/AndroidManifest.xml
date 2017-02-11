@@ -32,6 +32,9 @@
         <activity android:name=".activity.ResultActivity"
             android:screenOrientation="portrait"
             />
+        <activity android:name=".activity.CheckAdminActivity"
+            android:screenOrientation="portrait"
+            />
         <activity android:name=".activity.VerificationActivity"
             android:screenOrientation="portrait"
             />

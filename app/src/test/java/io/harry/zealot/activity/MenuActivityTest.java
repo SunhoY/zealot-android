@@ -63,7 +63,7 @@ public class MenuActivityTest {
     PermissionHelper mockPermissionHelper;
 
     @Captor
-    ArgumentCaptor<ServiceCallback> serviceCallbackCaptor;
+    ArgumentCaptor<ServiceCallback<Void>> serviceCallbackCaptor;
 
     @Before
     public void setUp() throws Exception {
@@ -209,7 +209,7 @@ public class MenuActivityTest {
 
         assumePhotoHasBeenPicked(mockUri, mockBitmap, 900, 1200);
 
-        verify(mockGagService).uploadGag(eq(mockBitmap), Matchers.<ServiceCallback>any());
+        verify(mockGagService).uploadGag(eq(mockBitmap), Matchers.<ServiceCallback<Void>>any());
     }
 
     @Test
@@ -234,6 +234,6 @@ public class MenuActivityTest {
 
         IntentAssert intentAssert = new IntentAssert(nextStartedActivity);
 
-        intentAssert.hasComponent(application, VerificationActivity.class);
+        intentAssert.hasComponent(application, CheckAdminActivity.class);
     }
 }
