@@ -109,4 +109,8 @@ public class GagService {
             }
         });
     }
+
+    public void getUnverifiedGagImages(ServiceCallback<List<String>> any) {
+
+    }
 }

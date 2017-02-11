@@ -11,6 +11,8 @@ import io.harry.zealot.activity.SplashActivity;
 import io.harry.zealot.activity.SplashActivityTest;
 import io.harry.zealot.activity.TestAjaeActivity;
 import io.harry.zealot.activity.TestAjaeActivityTest;
+import io.harry.zealot.activity.VerificationActivity;
+import io.harry.zealot.activity.VerificationActivityTest;
 import io.harry.zealot.fragment.GagFragment;
 import io.harry.zealot.fragment.GagFragmentTest;
 import io.harry.zealot.module.TestAjaeScoreModule;
@@ -48,4 +50,6 @@ public interface TestZealotComponent extends ZealotComponent {
     void inject(MenuActivityTest menuActivityTest);
     void inject(ResultActivity resultActivity);
     void inject(ResultActivityTest resultActivityTest);
+    void inject(VerificationActivity verificationActivity);
+    void inject(VerificationActivityTest verificationActivityTest);
 }
