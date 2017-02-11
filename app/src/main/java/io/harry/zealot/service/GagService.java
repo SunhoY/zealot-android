@@ -35,7 +35,7 @@ public class GagService {
         ((ZealotApplication) context).getZealotComponent().inject(this);
     }
 
-    public void getGagImageFileNames(final ServiceCallback<List<String>> serviceCallback) {
+    public void getGagImageFileNames(int requestCount, final ServiceCallback<List<String>> serviceCallback) {
         DatabaseReference gagReference = firebaseHelper.getDatabaseReference("gags");
         gagReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

@@ -54,6 +54,7 @@ import static org.mockito.Mockito.when;
 public class GagServiceTest {
     private static final long MILLIS_2017_06_19 = 1497873600000L;
     private static final String NO_MATTER = "no matter";
+    private static final int ANY_COUNT = 9;
 
     @Inject
     FirebaseHelper mockFirebaseHelper;
@@ -110,7 +111,7 @@ public class GagServiceTest {
 
     @Test
     public void getGagImageFileNames_getGagsReferenceFromFirebaseHelper() throws Exception {
-        subject.getGagImageFileNames(mockStringListServiceCallback);
+        subject.getGagImageFileNames(ANY_COUNT, mockStringListServiceCallback);
 
         verify(mockFirebaseHelper).getDatabaseReference("gags");
     }
@@ -119,7 +120,7 @@ public class GagServiceTest {
     public void getGagImageFileNames_addSingleValueEventListenerToReference() throws Exception {
         when(mockFirebaseHelper.getDatabaseReference("gags")).thenReturn(mockDatabaseReference);
 
-        subject.getGagImageFileNames(mockStringListServiceCallback);
+        subject.getGagImageFileNames(ANY_COUNT, mockStringListServiceCallback);
 
         verify(mockDatabaseReference).addListenerForSingleValueEvent(any(ValueEventListener.class));
     }
@@ -128,7 +129,7 @@ public class GagServiceTest {
     public void getGagImageFileNames_extractsFileNamesFromDataSnapshot() throws Exception {
         DataSnapshot mockDataSnapshot = createMockDataSnapshotForJPGImages(3);
 
-        subject.getGagImageFileNames(mockStringListServiceCallback);
+        subject.getGagImageFileNames(ANY_COUNT, mockStringListServiceCallback);
 
         verify(mockDatabaseReference).addListenerForSingleValueEvent(valueEventListenerCaptor.capture());
 
