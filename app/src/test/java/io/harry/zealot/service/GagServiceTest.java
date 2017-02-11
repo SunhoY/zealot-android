@@ -9,6 +9,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.common.collect.ImmutableMap;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
@@ -84,17 +85,19 @@ public class GagServiceTest {
     @Mock
     UploadTask mockUploadTask;
     @Mock
-    Bitmap mockBitmap;
+    Query mockQuery;
 
+    @Mock
+    Bitmap mockBitmap;
     @Captor
     ArgumentCaptor<ValueEventListener> valueEventListenerCaptor;
     @Captor
     ArgumentCaptor<OnSuccessListener<StorageMetadata>> onSuccessListenerMetadataCaptor;
     @Captor
     ArgumentCaptor<OnSuccessListener<UploadTask.TaskSnapshot>> onSuccessListenerUploadCaptor;
+
     @Captor
     ArgumentCaptor<ByteArrayOutputStream> byteArrayOutputStreamCaptor;
-
     private GagService subject;
 
     @Before
@@ -110,23 +113,37 @@ public class GagServiceTest {
     }
 
     @Test
-    public void getGagImageFileNames_getGagsReferenceFromFirebaseHelper() throws Exception {
+    public void getGagImageFileNames_getsGagsReferenceFromFirebaseHelper() throws Exception {
+        when(mockDatabaseReference.limitToLast(anyInt())).thenReturn(mockDatabaseReference);
+
         subject.getGagImageFileNames(ANY_COUNT, mockStringListServiceCallback);
 
         verify(mockFirebaseHelper).getDatabaseReference("gags");
     }
 
     @Test
-    public void getGagImageFileNames_addSingleValueEventListenerToReference() throws Exception {
+    public void getGagImageFileNames_queriesLastNumberOfItemsFromDatabaseReference() throws Exception {
         when(mockFirebaseHelper.getDatabaseReference("gags")).thenReturn(mockDatabaseReference);
+        when(mockDatabaseReference.limitToLast(eq(10))).thenReturn(mockDatabaseReference);
 
-        subject.getGagImageFileNames(ANY_COUNT, mockStringListServiceCallback);
+        subject.getGagImageFileNames(10, mockStringListServiceCallback);
 
-        verify(mockDatabaseReference).addListenerForSingleValueEvent(any(ValueEventListener.class));
+        verify(mockDatabaseReference).limitToLast(10);
+    }
+
+    @Test
+    public void getGagImageFileNames_addSingleValueEventListenerToQuery() throws Exception {
+        when(mockFirebaseHelper.getDatabaseReference("gags")).thenReturn(mockDatabaseReference);
+        when(mockDatabaseReference.limitToLast(anyInt())).thenReturn(mockQuery);
+
+        subject.getGagImageFileNames(10, mockStringListServiceCallback);
+
+        verify(mockQuery).addListenerForSingleValueEvent(any(ValueEventListener.class));
     }
 
     @Test
     public void getGagImageFileNames_extractsFileNamesFromDataSnapshot() throws Exception {
+        when(mockDatabaseReference.limitToLast(anyInt())).thenReturn(mockDatabaseReference);
         DataSnapshot mockDataSnapshot = createMockDataSnapshotForJPGImages(3);
 
         subject.getGagImageFileNames(ANY_COUNT, mockStringListServiceCallback);

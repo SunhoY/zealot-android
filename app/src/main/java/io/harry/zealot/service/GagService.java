@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
@@ -37,7 +38,9 @@ public class GagService {
 
     public void getGagImageFileNames(int requestCount, final ServiceCallback<List<String>> serviceCallback) {
         DatabaseReference gagReference = firebaseHelper.getDatabaseReference("gags");
-        gagReference.addListenerForSingleValueEvent(new ValueEventListener() {
+
+        Query query = gagReference.limitToLast(requestCount);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Iterable<DataSnapshot> children = dataSnapshot.getChildren();
