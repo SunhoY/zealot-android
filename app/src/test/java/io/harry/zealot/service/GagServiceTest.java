@@ -335,7 +335,7 @@ public class GagServiceTest {
 
         onSuccessListenerUploadCaptor.getValue().onSuccess(mock(UploadTask.TaskSnapshot.class));
 
-        verify(mockChildReference).setValue(ImmutableMap.of("fileName", "1497873600000.jpg"));
+        verify(mockChildReference).setValue(ImmutableMap.of("fileName", "1497873600000.jpg", "verified", false));
     }
 
     @Test

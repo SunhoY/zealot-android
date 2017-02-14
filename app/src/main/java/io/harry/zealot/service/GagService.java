@@ -101,7 +101,7 @@ public class GagService {
                 DatabaseReference gagsRef = firebaseHelper.getDatabaseReference("gags");
                 DatabaseReference newlyCreatedChild = gagsRef.push();
 
-                ImmutableMap value = ImmutableMap.of("fileName", fileName);
+                ImmutableMap value = ImmutableMap.of("fileName", fileName, "verified", false);
 
                 newlyCreatedChild.setValue(value);
 
