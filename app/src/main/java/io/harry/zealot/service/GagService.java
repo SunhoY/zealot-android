@@ -29,6 +29,10 @@ import io.harry.zealot.model.Gag;
 
 public class GagService {
 
+    private static final String FILE_NAME_FIELD = "fileName";
+    private static final String VERIFIED_FIELD = "verified";
+    private static final String GAGS_REFERENCE = "gags";
+
     @Inject
     FirebaseHelper firebaseHelper;
 
@@ -36,19 +40,19 @@ public class GagService {
         ((ZealotApplication) context).getZealotComponent().inject(this);
     }
 
-    public void getGagImageFileNames(int requestCount, boolean verified, final ServiceCallback<List<String>> serviceCallback) {
-        DatabaseReference gagReference = firebaseHelper.getDatabaseReference("gags");
+    public void getGagImageFileNames(int requestCount, boolean verified, final ServiceCallback<List<Gag>> serviceCallback) {
+        DatabaseReference gagReference = firebaseHelper.getDatabaseReference(GAGS_REFERENCE);
 
-        Query query = gagReference.orderByChild("verified").equalTo(verified).limitToLast(requestCount);
+        Query query = gagReference.orderByChild(VERIFIED_FIELD).equalTo(verified).limitToLast(requestCount);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Iterable<DataSnapshot> children = dataSnapshot.getChildren();
 
-                List<String> result = new ArrayList<>();
+                List<Gag> result = new ArrayList<>();
 
                 for(DataSnapshot child : children) {
-                    result.add(child.getValue(Gag.class).fileName);
+                    result.add(child.getValue(Gag.class));
                 }
 
                 serviceCallback.onSuccess(result);
@@ -62,7 +66,7 @@ public class GagService {
     }
 
     public void getGagImageUris(final List<String> fileNames, final ServiceCallback<List<Uri>> serviceCallback) {
-        StorageReference storageReference = firebaseHelper.getStorageReference("gags");
+        StorageReference storageReference = firebaseHelper.getStorageReference(GAGS_REFERENCE);
 
         final List<Uri> imageUris = new ArrayList<>();
 
@@ -88,7 +92,7 @@ public class GagService {
     public void uploadGag(Bitmap bitmap, final ServiceCallback<Void> serviceCallback) {
         final String fileName = String.valueOf(new DateTime().getMillis()) + ".jpg";
 
-        StorageReference gagsReference = firebaseHelper.getStorageReference("gags");
+        StorageReference gagsReference = firebaseHelper.getStorageReference(GAGS_REFERENCE);
         StorageReference imageReference = gagsReference.child(fileName);
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -98,10 +102,10 @@ public class GagService {
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                DatabaseReference gagsRef = firebaseHelper.getDatabaseReference("gags");
+                DatabaseReference gagsRef = firebaseHelper.getDatabaseReference(GAGS_REFERENCE);
                 DatabaseReference newlyCreatedChild = gagsRef.push();
 
-                ImmutableMap value = ImmutableMap.of("fileName", fileName, "verified", false);
+                ImmutableMap value = ImmutableMap.of(FILE_NAME_FIELD, fileName, VERIFIED_FIELD, false);
 
                 newlyCreatedChild.setValue(value);
 
@@ -111,6 +115,19 @@ public class GagService {
     }
 
     public void verifyGag(String uri) {
+        DatabaseReference gagReference = firebaseHelper.getDatabaseReference(GAGS_REFERENCE);
+        Query queriedByFileName = gagReference.orderByChild(FILE_NAME_FIELD).equalTo(uri);
 
+        queriedByFileName.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }

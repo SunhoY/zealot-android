@@ -29,6 +29,7 @@ import io.harry.zealot.R;
 import io.harry.zealot.TestZealotApplication;
 import io.harry.zealot.adapter.GagPagerAdapter;
 import io.harry.zealot.fragment.GagFragment;
+import io.harry.zealot.model.Gag;
 import io.harry.zealot.service.GagService;
 import io.harry.zealot.service.ServiceCallback;
 import io.harry.zealot.wrapper.GagPagerAdapterWrapper;
@@ -57,7 +58,7 @@ public class VerificationActivityTest {
     GagPagerAdapterWrapper mockGagPagerAdapterWrapper;
 
     @Captor
-    ArgumentCaptor<ServiceCallback<List<String>>> stringListServiceCallbackCaptor;
+    ArgumentCaptor<ServiceCallback<List<Gag>>> gagListServiceCallbackCaptor;
     @Captor
     ArgumentCaptor<ServiceCallback<List<Uri>>> uriListServiceCallbackCaptor;
 
@@ -76,24 +77,24 @@ public class VerificationActivityTest {
 
         ((TestZealotApplication)subject.getApplication()).getZealotComponent().inject(this);
 
-        verify(mockGagService).getGagImageFileNames(anyInt(), anyBoolean(), stringListServiceCallbackCaptor.capture());
+        verify(mockGagService).getGagImageFileNames(anyInt(), anyBoolean(), gagListServiceCallbackCaptor.capture());
     }
 
     @Test
     public void onCreate_callsGagServiceToFetchUnverifiedGagImages() throws Exception {
-        verify(mockGagService).getGagImageFileNames(anyInt(), eq(false), Matchers.<ServiceCallback<List<String>>>any());
+        verify(mockGagService).getGagImageFileNames(anyInt(), eq(false), Matchers.<ServiceCallback<List<Gag>>>any());
     }
 
     @Test
     public void onCreate_callsGagServiceToFetchNumberOfGagImages() throws Exception {
         int verificationChunkSize = application.getResources().getInteger(R.integer.verification_chunk_size);
 
-        verify(mockGagService).getGagImageFileNames(eq(verificationChunkSize), anyBoolean(), Matchers.<ServiceCallback<List<String>>>any());
+        verify(mockGagService).getGagImageFileNames(eq(verificationChunkSize), anyBoolean(), Matchers.<ServiceCallback<List<Gag>>>any());
     }
 
     @Test
     public void afterFetchingImages_callsGagServiceToFetchGagURIs() throws Exception {
-        stringListServiceCallbackCaptor.getValue().onSuccess(Arrays.asList("first.jpg", "second.jpg"));
+        gagListServiceCallbackCaptor.getValue().onSuccess(createGagList("first.jpg", "second.jpg"));
 
         verify(mockGagService).getGagImageUris(eq(Arrays.asList("first.jpg", "second.jpg")),
                 Matchers.<ServiceCallback<List<Uri>>>any());
@@ -101,8 +102,8 @@ public class VerificationActivityTest {
 
     @Test
     public void afterFetchingURIs_getsViewPagerAdapterFromWrapper() throws Exception {
-        ArrayList<String> inputDoesNotMatter = new ArrayList<>();
-        stringListServiceCallbackCaptor.getValue().onSuccess(inputDoesNotMatter);
+        ArrayList<Gag> inputDoesNotMatter = new ArrayList<>();
+        gagListServiceCallbackCaptor.getValue().onSuccess(inputDoesNotMatter);
 
         verify(mockGagService).getGagImageUris(Matchers.<List<String>>any(),
                 uriListServiceCallbackCaptor.capture());
@@ -114,8 +115,8 @@ public class VerificationActivityTest {
 
     @Test
     public void afterGettingViewPagerAdapter_setsOnViewPager() throws Exception {
-        ArrayList<String> inputDoesNotMatter = new ArrayList<>();
-        stringListServiceCallbackCaptor.getValue().onSuccess(inputDoesNotMatter);
+        ArrayList<Gag> inputDoesNotMatter = new ArrayList<>();
+        gagListServiceCallbackCaptor.getValue().onSuccess(inputDoesNotMatter);
 
         verify(mockGagService).getGagImageUris(Matchers.<List<String>>any(),
                 uriListServiceCallbackCaptor.capture());
@@ -174,5 +175,16 @@ public class VerificationActivityTest {
         subject.onVerifyClick();
 
         verify(mockGagService).verifyGag("http://this_is_uri.jpg");
+    }
+
+    private List<Gag> createGagList(String... fileNames) {
+        List<Gag> result = new ArrayList<>();
+        for(String fileName : fileNames) {
+            Gag gag = new Gag();
+            gag.fileName = fileName;
+            result.add(gag);
+        }
+
+        return result;
     }
 }

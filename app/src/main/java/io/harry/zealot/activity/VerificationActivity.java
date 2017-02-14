@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -15,6 +16,7 @@ import butterknife.OnClick;
 import io.harry.zealot.R;
 import io.harry.zealot.adapter.GagPagerAdapter;
 import io.harry.zealot.fragment.GagFragment;
+import io.harry.zealot.model.Gag;
 import io.harry.zealot.service.GagService;
 import io.harry.zealot.service.ServiceCallback;
 import io.harry.zealot.wrapper.GagPagerAdapterWrapper;
@@ -37,16 +39,25 @@ public class VerificationActivity extends ZealotBaseActivity {
         ButterKnife.bind(this);
 
         int chunkSize = getResources().getInteger(R.integer.verification_chunk_size);
-        gagService.getGagImageFileNames(chunkSize, false, new ServiceCallback<List<String>>() {
+        gagService.getGagImageFileNames(chunkSize, false, new ServiceCallback<List<Gag>>() {
             @Override
-            public void onSuccess(List<String> result) {
-                gagService.getGagImageUris(result, new ServiceCallback<List<Uri>>() {
-                    @Override
-                    public void onSuccess(List<Uri> result) {
-                        GagPagerAdapter gagPagerAdapter = gagPagerAdapterWrapper.getGagPagerAdapter(getSupportFragmentManager(), result);
-                        verificationPager.setAdapter(gagPagerAdapter);
-                    }
-                });
+            public void onSuccess(List<Gag> result) {
+                getGagImageUris(result);
+            }
+        });
+    }
+
+    private void getGagImageUris(List<Gag> gags) {
+        List<String> imageFileNames = new ArrayList<>();
+        for(Gag gag : gags) {
+            imageFileNames.add(gag.fileName);
+        }
+
+        gagService.getGagImageUris(imageFileNames, new ServiceCallback<List<Uri>>() {
+            @Override
+            public void onSuccess(List<Uri> result) {
+                GagPagerAdapter gagPagerAdapter = gagPagerAdapterWrapper.getGagPagerAdapter(getSupportFragmentManager(), result);
+                verificationPager.setAdapter(gagPagerAdapter);
             }
         });
     }

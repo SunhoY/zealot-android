@@ -16,6 +16,7 @@ import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -27,6 +28,7 @@ import io.harry.zealot.R;
 import io.harry.zealot.adapter.GagPagerAdapter;
 import io.harry.zealot.helper.AnimationHelper;
 import io.harry.zealot.listener.FaceListener;
+import io.harry.zealot.model.Gag;
 import io.harry.zealot.range.AjaeScoreRange;
 import io.harry.zealot.service.GagService;
 import io.harry.zealot.service.ServiceCallback;
@@ -105,10 +107,10 @@ public class TestAjaeActivity extends ZealotBaseActivity implements FaceListener
         testAjaePreview.setCameraSource(cameraSource);
 
         int requestCount = getResources().getInteger(R.integer.gag_count);
-        gagService.getGagImageFileNames(requestCount, true, new ServiceCallback<List<String>>() {
+        gagService.getGagImageFileNames(requestCount, true, new ServiceCallback<List<Gag>>() {
             @Override
-            public void onSuccess(List<String> result) {
-                getGagImageURLsWithImageNames(result, new ServiceCallback<List<Uri>>() {
+            public void onSuccess(List<Gag> result) {
+                getGagImageURLsWithGags(result, new ServiceCallback<List<Uri>>() {
                     @Override
                     public void onSuccess(List<Uri> result) {
                         gagPagerAdapter = gagPagerAdapterWrapper.getGagPagerAdapter(
@@ -164,8 +166,13 @@ public class TestAjaeActivity extends ZealotBaseActivity implements FaceListener
         finish();
     }
 
-    private void getGagImageURLsWithImageNames(List<String> urls, ServiceCallback<List<Uri>> serviceCallback) {
-        gagService.getGagImageUris(urls, serviceCallback);
+    private void getGagImageURLsWithGags(List<Gag> gags, ServiceCallback<List<Uri>> serviceCallback) {
+        List<String> imageNames = new ArrayList<>();
+        for(Gag gag : gags) {
+            imageNames.add(gag.fileName);
+        }
+
+        gagService.getGagImageUris(imageNames, serviceCallback);
     }
 
     private int getAjaeSeverityLevel(float ajaePower) {
