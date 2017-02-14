@@ -27,4 +27,6 @@
     <string name="admin_pass_code">435261</string>
     <string name="confirm">confirm</string>
     <string name="admin_introduction">관리자 전용 페이지입니다.\n관리자가 아니면 사용할 수 없습니다\n인증번호를 입력해주세요</string>
+    <string name="go">GO</string>
+    <string name="throw_away">버려</string>
 </resources>

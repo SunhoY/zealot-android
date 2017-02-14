@@ -28,6 +28,7 @@ import io.harry.zealot.BuildConfig;
 import io.harry.zealot.R;
 import io.harry.zealot.TestZealotApplication;
 import io.harry.zealot.adapter.GagPagerAdapter;
+import io.harry.zealot.fragment.GagFragment;
 import io.harry.zealot.service.GagService;
 import io.harry.zealot.service.ServiceCallback;
 import io.harry.zealot.wrapper.GagPagerAdapterWrapper;
@@ -38,6 +39,7 @@ import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.RuntimeEnvironment.application;
@@ -45,6 +47,8 @@ import static org.robolectric.RuntimeEnvironment.application;
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class)
 public class VerificationActivityTest {
+    private static final int ANY_PAGE = 0;
+
     private VerificationActivity subject;
 
     @Inject
@@ -61,7 +65,7 @@ public class VerificationActivityTest {
     GagPagerAdapter mockGagPagerAdapter;
 
     @BindView(R.id.verification_pager)
-    ViewPager gagViewPager;
+    ViewPager verificationPager;
 
     @Before
     public void setUp() throws Exception {
@@ -121,6 +125,54 @@ public class VerificationActivityTest {
 
         uriListServiceCallbackCaptor.getValue().onSuccess(Arrays.asList(Uri.parse("first.jpg"), Uri.parse("second.jpg")));
 
-        assertThat(gagViewPager.getAdapter()).isEqualTo(mockGagPagerAdapter);
+        assertThat(verificationPager.getAdapter()).isEqualTo(mockGagPagerAdapter);
+    }
+
+    private void setMockPagerAdapter(int secondPage) {
+        when(mockGagPagerAdapter.getCount()).thenReturn(2);
+
+        verificationPager.setAdapter(mockGagPagerAdapter);
+        verificationPager.setCurrentItem(secondPage);
+    }
+
+    private void setMockGagFragment(String uriString, GagFragment fragment) {
+        when(mockGagPagerAdapter.getItem(anyInt())).thenReturn(fragment);
+        when(fragment.getGagImageUri()).thenReturn(Uri.parse(uriString));
+    }
+
+    @Test
+    public void onVerifyClick_getsCurrentSelectedVerificationPagerIndex() throws Exception {
+        int secondPage = 1;
+
+        setMockPagerAdapter(secondPage);
+
+        setMockGagFragment("http://this_is_uri.jpg", mock(GagFragment.class));
+
+        subject.onVerifyClick();
+
+        verify(mockGagPagerAdapter).getItem(secondPage);
+    }
+
+    @Test
+    public void onVerifyClick_getsGagImageUriFromSelectedFragment() throws Exception {
+        setMockPagerAdapter(ANY_PAGE);
+
+        GagFragment mockFragment = mock(GagFragment.class);
+        setMockGagFragment("http://this_is_uri.jpg", mockFragment);
+
+        subject.onVerifyClick();
+
+        verify(mockFragment).getGagImageUri();
+    }
+
+    @Test
+    public void onVerifyClick_verifiesGagViaGagService() throws Exception {
+        setMockPagerAdapter(ANY_PAGE);
+
+        setMockGagFragment("http://this_is_uri.jpg", mock(GagFragment.class));
+
+        subject.onVerifyClick();
+
+        verify(mockGagService).verifyGag("http://this_is_uri.jpg");
     }
 }

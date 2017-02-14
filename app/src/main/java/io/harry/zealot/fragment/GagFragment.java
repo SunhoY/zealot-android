@@ -64,4 +64,8 @@ public class GagFragment extends Fragment {
 
         super.onResume();
     }
+
+    public Uri getGagImageUri() {
+        return gagImageUri;
+    }
 }

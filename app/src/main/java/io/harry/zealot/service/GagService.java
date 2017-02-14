@@ -109,4 +109,8 @@ public class GagService {
             }
         });
     }
+
+    public void verifyGag(String uri) {
+
+    }
 }

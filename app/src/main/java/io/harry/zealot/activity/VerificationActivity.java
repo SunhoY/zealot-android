@@ -11,8 +11,10 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.harry.zealot.R;
 import io.harry.zealot.adapter.GagPagerAdapter;
+import io.harry.zealot.fragment.GagFragment;
 import io.harry.zealot.service.GagService;
 import io.harry.zealot.service.ServiceCallback;
 import io.harry.zealot.wrapper.GagPagerAdapterWrapper;
@@ -47,5 +49,13 @@ public class VerificationActivity extends ZealotBaseActivity {
                 });
             }
         });
+    }
+
+    @OnClick(R.id.verify)
+    public void onVerifyClick() {
+        int currentItem = verificationPager.getCurrentItem();
+        GagFragment gagFragment = (GagFragment) ((GagPagerAdapter) verificationPager.getAdapter()).getItem(currentItem);
+
+        gagService.verifyGag(gagFragment.getGagImageUri().toString());
     }
 }
