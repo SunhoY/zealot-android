@@ -27,6 +27,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,6 +40,7 @@ import io.harry.zealot.R;
 import io.harry.zealot.TestZealotApplication;
 import io.harry.zealot.adapter.GagPagerAdapter;
 import io.harry.zealot.helper.AnimationHelper;
+import io.harry.zealot.model.Gag;
 import io.harry.zealot.range.AjaeScoreRange;
 import io.harry.zealot.service.GagService;
 import io.harry.zealot.service.ServiceCallback;
@@ -105,7 +107,7 @@ public class TestAjaeActivityTest {
     com.google.android.gms.vision.CameraSource mockCameraSource;
 
     @Captor
-    ArgumentCaptor<ServiceCallback<List<String>>> stringListServiceCallbackCaptor;
+    ArgumentCaptor<ServiceCallback<List<Gag>>> gagListServiceCallbackCaptor;
     @Captor
     ArgumentCaptor<ServiceCallback<List<Uri>>> uriListServiceCallbackCaptor;
 
@@ -152,19 +154,19 @@ public class TestAjaeActivityTest {
     public void onCreate_callGagServiceToFetchNumberOfGagImageFileNames() throws Exception {
         int requestCount = application.getResources().getInteger(R.integer.gag_count);
 
-        verify(mockGagService).getGagImageFileNames(eq(requestCount), anyBoolean(), Matchers.<ServiceCallback<List<String>>>any());
+        verify(mockGagService).getGagImageFileNames(eq(requestCount), anyBoolean(), Matchers.<ServiceCallback<List<Gag>>>any());
     }
 
     @Test
     public void onCreate_callGagServiceToFetchVerifiedGagImageFileNames() throws Exception {
-        verify(mockGagService).getGagImageFileNames(anyInt(), eq(true), Matchers.<ServiceCallback<List<String>>>any());
+        verify(mockGagService).getGagImageFileNames(anyInt(), eq(true), Matchers.<ServiceCallback<List<Gag>>>any());
     }
 
     @Test
     public void afterFetchingGagImageFileNames_callsGagServiceToGetImageURLs() throws Exception {
-        verify(mockGagService).getGagImageFileNames(anyInt(), anyBoolean(), stringListServiceCallbackCaptor.capture());
+        verify(mockGagService).getGagImageFileNames(anyInt(), anyBoolean(), gagListServiceCallbackCaptor.capture());
 
-        stringListServiceCallbackCaptor.getValue().onSuccess(Arrays.asList("gag1.png", "gag2.png"));
+        gagListServiceCallbackCaptor.getValue().onSuccess(createGagList("gag1.png", "gag2.png"));
 
         verify(mockGagService).getGagImageUris(eq(Arrays.asList("gag1.png", "gag2.png")),
                 Matchers.<ServiceCallback<List<Uri>>> any());
@@ -172,9 +174,9 @@ public class TestAjaeActivityTest {
 
     @Test
     public void onCreate_getPagerAdapterWithRequestSizeOfFragments() throws Exception {
-        verify(mockGagService).getGagImageFileNames(anyInt(), anyBoolean(), stringListServiceCallbackCaptor.capture());
+        verify(mockGagService).getGagImageFileNames(anyInt(), anyBoolean(), gagListServiceCallbackCaptor.capture());
 
-        stringListServiceCallbackCaptor.getValue().onSuccess(Arrays.asList("gag1.png", "gag2.png"));
+        gagListServiceCallbackCaptor.getValue().onSuccess(createGagList("gag1.png", "gag2.png"));
 
         verify(mockGagService).getGagImageUris(eq(Arrays.asList("gag1.png", "gag2.png")),
                 uriListServiceCallbackCaptor.capture());
@@ -193,9 +195,9 @@ public class TestAjaeActivityTest {
 
     @Test
     public void onCreate_setAdapterOnViewPager() throws Exception {
-        verify(mockGagService).getGagImageFileNames(anyInt(), anyBoolean(), stringListServiceCallbackCaptor.capture());
+        verify(mockGagService).getGagImageFileNames(anyInt(), anyBoolean(), gagListServiceCallbackCaptor.capture());
 
-        stringListServiceCallbackCaptor.getValue().onSuccess(Arrays.asList("gag1.png", "gag2.png"));
+        gagListServiceCallbackCaptor.getValue().onSuccess(createGagList("gag1.png", "gag2.png"));
 
         verify(mockGagService).getGagImageUris(eq(Arrays.asList("gag1.png", "gag2.png")),
                 uriListServiceCallbackCaptor.capture());
@@ -396,5 +398,16 @@ public class TestAjaeActivityTest {
         when(mockFace.getIsSmilingProbability()).thenReturn(smileyProbability);
 
         subject.onFaceDetect(mockFace);
+    }
+
+    private List<Gag> createGagList(String... fileNames) {
+        List<Gag> result = new ArrayList<>();
+        for(String fileName : fileNames) {
+            Gag gag = new Gag();
+            gag.fileName = fileName;
+            result.add(gag);
+        }
+
+        return result;
     }
 }

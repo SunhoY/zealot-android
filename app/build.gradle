@@ -66,6 +66,8 @@ dependencies {
 
     apt "com.jakewharton:butterknife-compiler:${butterKnifeVersion}"
 
+    apt "org.projectlombok:lombok:1.16.14"
+
     testCompile 'junit:junit:4.12'
 
     testCompile "org.robolectric:robolectric:${robolectricVersion}"
@@ -84,6 +86,8 @@ dependencies {
     testApt "com.google.dagger:dagger-compiler:${daggerVersion}"
 
     testApt "com.jakewharton:butterknife-compiler:${butterKnifeVersion}"
+
+    testApt "org.projectlombok:lombok:1.16.14"
 }
 
 apply plugin: 'com.google.gms.google-services'
