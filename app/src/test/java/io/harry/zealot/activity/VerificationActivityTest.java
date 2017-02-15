@@ -28,7 +28,6 @@ import io.harry.zealot.BuildConfig;
 import io.harry.zealot.R;
 import io.harry.zealot.TestZealotApplication;
 import io.harry.zealot.adapter.GagPagerAdapter;
-import io.harry.zealot.fragment.GagFragment;
 import io.harry.zealot.model.Gag;
 import io.harry.zealot.service.GagService;
 import io.harry.zealot.service.ServiceCallback;
@@ -40,7 +39,6 @@ import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.RuntimeEnvironment.application;
@@ -48,8 +46,6 @@ import static org.robolectric.RuntimeEnvironment.application;
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class)
 public class VerificationActivityTest {
-    private static final int ANY_PAGE = 0;
-
     private VerificationActivity subject;
 
     @Inject
@@ -77,19 +73,19 @@ public class VerificationActivityTest {
 
         ((TestZealotApplication)subject.getApplication()).getZealotComponent().inject(this);
 
-        verify(mockGagService).getGagImageFileNames(anyInt(), anyBoolean(), gagListServiceCallbackCaptor.capture());
+        verify(mockGagService).getGags(anyInt(), anyBoolean(), gagListServiceCallbackCaptor.capture());
     }
 
     @Test
     public void onCreate_callsGagServiceToFetchUnverifiedGagImages() throws Exception {
-        verify(mockGagService).getGagImageFileNames(anyInt(), eq(false), Matchers.<ServiceCallback<List<Gag>>>any());
+        verify(mockGagService).getGags(anyInt(), eq(false), Matchers.<ServiceCallback<List<Gag>>>any());
     }
 
     @Test
     public void onCreate_callsGagServiceToFetchNumberOfGagImages() throws Exception {
         int verificationChunkSize = application.getResources().getInteger(R.integer.verification_chunk_size);
 
-        verify(mockGagService).getGagImageFileNames(eq(verificationChunkSize), anyBoolean(), Matchers.<ServiceCallback<List<Gag>>>any());
+        verify(mockGagService).getGags(eq(verificationChunkSize), anyBoolean(), Matchers.<ServiceCallback<List<Gag>>>any());
     }
 
     @Test
@@ -136,51 +132,31 @@ public class VerificationActivityTest {
         verificationPager.setCurrentItem(secondPage);
     }
 
-    private void setMockGagFragment(String uriString, GagFragment fragment) {
-        when(mockGagPagerAdapter.getItem(anyInt())).thenReturn(fragment);
-        when(fragment.getGagImageUri()).thenReturn(Uri.parse(uriString));
+    private void setGagsAreFetched(List<Gag> gagList) {
+        verify(mockGagService).getGags(anyInt(), anyBoolean(), gagListServiceCallbackCaptor.capture());
+        gagListServiceCallbackCaptor.getValue().onSuccess(gagList);
     }
 
     @Test
-    public void onVerifyClick_getsCurrentSelectedVerificationPagerIndex() throws Exception {
-        int secondPage = 1;
-
-        setMockPagerAdapter(secondPage);
-
-        setMockGagFragment("http://this_is_uri.jpg", mock(GagFragment.class));
+    public void onVerifyClick_callsVerifyGagWithSelectedGagViaGagService() throws Exception {
+        setMockPagerAdapter(1);
+        setGagsAreFetched(createGagList("filename_0.jpg", "filename_1.jpg"));
 
         subject.onVerifyClick();
 
-        verify(mockGagPagerAdapter).getItem(secondPage);
-    }
+        Gag expectedGag = new Gag();
+        expectedGag.key = "key_" + 1;
+        expectedGag.fileName = "filename_1.jpg";
 
-    @Test
-    public void onVerifyClick_getsGagImageUriFromSelectedFragment() throws Exception {
-        setMockPagerAdapter(ANY_PAGE);
-
-        GagFragment mockFragment = mock(GagFragment.class);
-        setMockGagFragment("http://this_is_uri.jpg", mockFragment);
-
-        subject.onVerifyClick();
-
-        verify(mockFragment).getGagImageUri();
-    }
-
-    @Test
-    public void onVerifyClick_verifiesGagViaGagService() throws Exception {
-        setMockPagerAdapter(ANY_PAGE);
-
-        setMockGagFragment("http://this_is_uri.jpg", mock(GagFragment.class));
-
-        subject.onVerifyClick();
-
-        verify(mockGagService).verifyGag("http://this_is_uri.jpg");
+        verify(mockGagService).verifyGag(expectedGag);
     }
 
     private List<Gag> createGagList(String... fileNames) {
         List<Gag> result = new ArrayList<>();
+        int i = 0;
         for(String fileName : fileNames) {
             Gag gag = new Gag();
+            gag.key = "key_" + (i++);
             gag.fileName = fileName;
             result.add(gag);
         }

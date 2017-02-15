@@ -154,17 +154,17 @@ public class TestAjaeActivityTest {
     public void onCreate_callGagServiceToFetchNumberOfGagImageFileNames() throws Exception {
         int requestCount = application.getResources().getInteger(R.integer.gag_count);
 
-        verify(mockGagService).getGagImageFileNames(eq(requestCount), anyBoolean(), Matchers.<ServiceCallback<List<Gag>>>any());
+        verify(mockGagService).getGags(eq(requestCount), anyBoolean(), Matchers.<ServiceCallback<List<Gag>>>any());
     }
 
     @Test
     public void onCreate_callGagServiceToFetchVerifiedGagImageFileNames() throws Exception {
-        verify(mockGagService).getGagImageFileNames(anyInt(), eq(true), Matchers.<ServiceCallback<List<Gag>>>any());
+        verify(mockGagService).getGags(anyInt(), eq(true), Matchers.<ServiceCallback<List<Gag>>>any());
     }
 
     @Test
     public void afterFetchingGagImageFileNames_callsGagServiceToGetImageURLs() throws Exception {
-        verify(mockGagService).getGagImageFileNames(anyInt(), anyBoolean(), gagListServiceCallbackCaptor.capture());
+        verify(mockGagService).getGags(anyInt(), anyBoolean(), gagListServiceCallbackCaptor.capture());
 
         gagListServiceCallbackCaptor.getValue().onSuccess(createGagList("gag1.png", "gag2.png"));
 
@@ -174,7 +174,7 @@ public class TestAjaeActivityTest {
 
     @Test
     public void onCreate_getPagerAdapterWithRequestSizeOfFragments() throws Exception {
-        verify(mockGagService).getGagImageFileNames(anyInt(), anyBoolean(), gagListServiceCallbackCaptor.capture());
+        verify(mockGagService).getGags(anyInt(), anyBoolean(), gagListServiceCallbackCaptor.capture());
 
         gagListServiceCallbackCaptor.getValue().onSuccess(createGagList("gag1.png", "gag2.png"));
 
@@ -195,7 +195,7 @@ public class TestAjaeActivityTest {
 
     @Test
     public void onCreate_setAdapterOnViewPager() throws Exception {
-        verify(mockGagService).getGagImageFileNames(anyInt(), anyBoolean(), gagListServiceCallbackCaptor.capture());
+        verify(mockGagService).getGags(anyInt(), anyBoolean(), gagListServiceCallbackCaptor.capture());
 
         gagListServiceCallbackCaptor.getValue().onSuccess(createGagList("gag1.png", "gag2.png"));
 

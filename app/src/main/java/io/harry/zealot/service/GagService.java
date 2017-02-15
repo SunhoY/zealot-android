@@ -40,7 +40,7 @@ public class GagService {
         ((ZealotApplication) context).getZealotComponent().inject(this);
     }
 
-    public void getGagImageFileNames(int requestCount, boolean verified, final ServiceCallback<List<Gag>> serviceCallback) {
+    public void getGags(int requestCount, boolean verified, final ServiceCallback<List<Gag>> serviceCallback) {
         DatabaseReference gagReference = firebaseHelper.getDatabaseReference(GAGS_REFERENCE);
 
         Query query = gagReference.orderByChild(VERIFIED_FIELD).equalTo(verified).limitToLast(requestCount);
@@ -52,7 +52,9 @@ public class GagService {
                 List<Gag> result = new ArrayList<>();
 
                 for(DataSnapshot child : children) {
-                    result.add(child.getValue(Gag.class));
+                    Gag gag = child.getValue(Gag.class);
+                    gag.key = child.getKey();
+                    result.add(gag);
                 }
 
                 serviceCallback.onSuccess(result);
@@ -114,20 +116,15 @@ public class GagService {
         });
     }
 
-    public void verifyGag(String uri) {
+    public void verifyGag(Gag gag) {
         DatabaseReference gagReference = firebaseHelper.getDatabaseReference(GAGS_REFERENCE);
-        Query queriedByFileName = gagReference.orderByChild(FILE_NAME_FIELD).equalTo(uri);
+        DatabaseReference targetGagReference = gagReference.child(gag.key);
+        targetGagReference.child("verified").setValue(true);
+    }
 
-        queriedByFileName.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+    public void rejectGag(Gag gag) {
+        StorageReference storageReference = firebaseHelper.getStorageReference(GAGS_REFERENCE);
+        storageReference.child(gag.fileName);
+        storageReference.delete();
     }
 }

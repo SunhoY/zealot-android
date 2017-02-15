@@ -15,7 +15,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.harry.zealot.R;
 import io.harry.zealot.adapter.GagPagerAdapter;
-import io.harry.zealot.fragment.GagFragment;
 import io.harry.zealot.model.Gag;
 import io.harry.zealot.service.GagService;
 import io.harry.zealot.service.ServiceCallback;
@@ -30,6 +29,8 @@ public class VerificationActivity extends ZealotBaseActivity {
     @BindView(R.id.verification_pager)
     ViewPager verificationPager;
 
+    private List<Gag> gagList;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,9 +40,10 @@ public class VerificationActivity extends ZealotBaseActivity {
         ButterKnife.bind(this);
 
         int chunkSize = getResources().getInteger(R.integer.verification_chunk_size);
-        gagService.getGagImageFileNames(chunkSize, false, new ServiceCallback<List<Gag>>() {
+        gagService.getGags(chunkSize, false, new ServiceCallback<List<Gag>>() {
             @Override
             public void onSuccess(List<Gag> result) {
+                gagList = result;
                 getGagImageUris(result);
             }
         });
@@ -65,8 +67,7 @@ public class VerificationActivity extends ZealotBaseActivity {
     @OnClick(R.id.verify)
     public void onVerifyClick() {
         int currentItem = verificationPager.getCurrentItem();
-        GagFragment gagFragment = (GagFragment) ((GagPagerAdapter) verificationPager.getAdapter()).getItem(currentItem);
 
-        gagService.verifyGag(gagFragment.getGagImageUri().toString());
+        gagService.verifyGag(gagList.get(currentItem));
     }
 }

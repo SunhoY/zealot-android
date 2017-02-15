@@ -56,15 +56,18 @@ import static org.mockito.Mockito.when;
 public class GagServiceTest {
     private static final long MILLIS_2017_06_19 = 1497873600000L;
     private static final String NO_MATTER = "no matter";
-    private static final String ANY_URI_STRING = "http://do_not_care.jpg";
     private static final int ANY_COUNT = 9;
     private static final boolean ANY_VERIFIED = true;
+    private static final String ANY_FILE_NAME = "no matter";
+    private static final String ANY_KEY = "no_matter";
 
     @Inject
     FirebaseHelper mockFirebaseHelper;
 
     @Mock
     DatabaseReference mockDatabaseReference;
+    @Mock
+    DatabaseReference mockVerifiedFieldReference;
     @Mock
     DatabaseReference mockChildReference;
     @Mock
@@ -89,9 +92,9 @@ public class GagServiceTest {
     UploadTask mockUploadTask;
     @Mock
     Query mockQuery;
-
     @Mock
     Bitmap mockBitmap;
+
     @Captor
     ArgumentCaptor<ValueEventListener> valueEventListenerCaptor;
     @Captor
@@ -119,61 +122,61 @@ public class GagServiceTest {
     }
 
     @Test
-    public void getGagImageFileNames_getsGagsReferenceFromFirebaseHelper() throws Exception {
-        subject.getGagImageFileNames(ANY_COUNT, ANY_VERIFIED, mockStringListServiceCallback);
+    public void getGags_getsGagsReferenceFromFirebaseHelper() throws Exception {
+        subject.getGags(ANY_COUNT, ANY_VERIFIED, mockStringListServiceCallback);
 
         verify(mockFirebaseHelper).getDatabaseReference("gags");
     }
 
     @Test
-    public void getGagImageFileNames_queriesOrderingByVerifiedField() throws Exception {
-        subject.getGagImageFileNames(ANY_COUNT, ANY_VERIFIED, mockStringListServiceCallback);
+    public void getGags_queriesOrderingByVerifiedField() throws Exception {
+        subject.getGags(ANY_COUNT, ANY_VERIFIED, mockStringListServiceCallback);
 
         verify(mockDatabaseReference).orderByChild("verified");
     }
 
     @Test
-    public void getGagImageFileNames_queriesVerifiedValueIsTrue() throws Exception {
-        subject.getGagImageFileNames(ANY_COUNT, true, mockStringListServiceCallback);
+    public void getGags_queriesVerifiedValueIsTrue() throws Exception {
+        subject.getGags(ANY_COUNT, true, mockStringListServiceCallback);
 
         verify(mockQuery).equalTo(true);
     }
 
     @Test
-    public void getGagImageFileNames_queriesVerifiedValueIsFalse() throws Exception {
-        subject.getGagImageFileNames(ANY_COUNT, false, mockStringListServiceCallback);
+    public void getGags_queriesVerifiedValueIsFalse() throws Exception {
+        subject.getGags(ANY_COUNT, false, mockStringListServiceCallback);
 
         verify(mockQuery).equalTo(false);
     }
 
     @Test
-    public void getGagImageFileNames_queriesLastNumberOfItemsFromDatabaseReference() throws Exception {
-        subject.getGagImageFileNames(10, ANY_VERIFIED, mockStringListServiceCallback);
+    public void getGags_queriesLastNumberOfItemsFromDatabaseReference() throws Exception {
+        subject.getGags(10, ANY_VERIFIED, mockStringListServiceCallback);
 
         verify(mockQuery).limitToLast(10);
     }
 
     @Test
-    public void getGagImageFileNames_addSingleValueEventListenerToQuery() throws Exception {
+    public void getGags_addSingleValueEventListenerToQuery() throws Exception {
         when(mockFirebaseHelper.getDatabaseReference("gags")).thenReturn(mockDatabaseReference);
         when(mockDatabaseReference.limitToLast(anyInt())).thenReturn(mockQuery);
 
-        subject.getGagImageFileNames(ANY_COUNT, ANY_VERIFIED, mockStringListServiceCallback);
+        subject.getGags(ANY_COUNT, ANY_VERIFIED, mockStringListServiceCallback);
 
         verify(mockQuery).addListenerForSingleValueEvent(any(ValueEventListener.class));
     }
 
     @Test
-    public void getGagImageFileNames_extractsFileNamesFromDataSnapshot() throws Exception {
+    public void getGags_extractsFileNamesFromDataSnapshot() throws Exception {
         DataSnapshot mockDataSnapshot = createMockDataSnapshotForJPGImages(3);
 
-        subject.getGagImageFileNames(ANY_COUNT, ANY_VERIFIED, mockStringListServiceCallback);
+        subject.getGags(ANY_COUNT, ANY_VERIFIED, mockStringListServiceCallback);
 
         verify(mockQuery).addListenerForSingleValueEvent(valueEventListenerCaptor.capture());
 
         valueEventListenerCaptor.getValue().onDataChange(mockDataSnapshot);
 
-        verify(mockStringListServiceCallback).onSuccess(createGagList("0.jpg", "1.jpg", "2.jpg"));
+        verify(mockStringListServiceCallback).onSuccess(createGagList("filename_0.jpg", "filename_1.jpg", "filename_2.jpg"));
     }
 
     @Test
@@ -352,44 +355,78 @@ public class GagServiceTest {
         verify(mockVoidServiceCallback).onSuccess(null);
     }
 
+    private void setMockFirebaseDatabase(String key) {
+        when(mockFirebaseHelper.getDatabaseReference(anyString())).thenReturn(mockDatabaseReference);
+        when(mockDatabaseReference.child(key)).thenReturn(mockDatabaseReference);
+        when(mockDatabaseReference.child("verified")).thenReturn(mockVerifiedFieldReference);
+    }
+
     @Test
     public void verifyGag_getsGagReferenceFromFirebaseHelper() throws Exception {
-        subject.verifyGag(ANY_URI_STRING);
+        setMockFirebaseDatabase(ANY_KEY);
+
+        subject.verifyGag(createGag(ANY_KEY, ANY_FILE_NAME));
 
         verify(mockFirebaseHelper).getDatabaseReference("gags");
     }
 
-    private void mockFirebaseDatabaseAndQuery() {
-        when(mockFirebaseHelper.getDatabaseReference(anyString())).thenReturn(mockDatabaseReference);
-        when(mockDatabaseReference.orderByChild(anyString())).thenReturn(mockQuery);
-        when(mockQuery.equalTo(anyString())).thenReturn(mockQuery);
+    @Test
+    public void verifyGag_getsChildByKey() throws Exception {
+        setMockFirebaseDatabase("this_key");
+
+        subject.verifyGag(createGag("this_key", ANY_FILE_NAME));
+
+        verify(mockDatabaseReference).child("this_key");
     }
 
     @Test
-    public void verifyGag_queriesOrderByChildOnDatabaseReference() throws Exception {
-        mockFirebaseDatabaseAndQuery();
+    public void verifyGag_getsVerifiedFieldByChild() throws Exception {
+        setMockFirebaseDatabase(ANY_KEY);
 
-        subject.verifyGag(ANY_URI_STRING);
+        subject.verifyGag(createGag(ANY_KEY, ANY_FILE_NAME));
 
-        verify(mockDatabaseReference).orderByChild("fileName");
+        verify(mockDatabaseReference).child("verified");
     }
 
     @Test
-    public void verifyGag_queriesValueOfFileNameOnQuery() throws Exception {
-        mockFirebaseDatabaseAndQuery();
+    public void verifyGag_setsValueTrueOnVerifiedField() throws Exception {
+        setMockFirebaseDatabase(ANY_KEY);
 
-        subject.verifyGag("http://verify_me.jpg");
+        subject.verifyGag(createGag(ANY_KEY, ANY_FILE_NAME));
 
-        verify(mockQuery).equalTo("http://verify_me.jpg");
+        verify(mockVerifiedFieldReference).setValue(true);
+    }
+
+    private void setMockFirebaseStorage(String fileName) {
+        when(mockFirebaseHelper.getStorageReference(anyString())).thenReturn(mockStorageReference);
+        when(mockStorageReference.child(fileName)).thenReturn(mockStorageReference);
     }
 
     @Test
-    public void verifyGag_addSingleValueEventHandlerOnQuery() throws Exception {
-        mockFirebaseDatabaseAndQuery();
+    public void rejectGag_getsStorageReferenceFromFirebaseHelper() throws Exception {
+        setMockFirebaseStorage(ANY_FILE_NAME);
 
-        subject.verifyGag(ANY_URI_STRING);
+        subject.rejectGag(createGag(ANY_KEY, ANY_FILE_NAME));
 
-        verify(mockQuery).addListenerForSingleValueEvent(any(ValueEventListener.class));
+        verify(mockFirebaseHelper).getStorageReference("gags");
+    }
+
+    @Test
+    public void rejectGag_getsChildWithFileName() throws Exception {
+        setMockFirebaseStorage("delete_this.jpg");
+
+        subject.rejectGag(createGag(ANY_KEY, "delete_this.jpg"));
+
+        verify(mockStorageReference).child("delete_this.jpg");
+    }
+
+    @Test
+    public void rejectGag_deletesFileFromStorage() throws Exception {
+        setMockFirebaseStorage(ANY_FILE_NAME);
+
+        subject.rejectGag(createGag(ANY_KEY, ANY_FILE_NAME));
+
+        verify(mockStorageReference).delete();
     }
 
     @NonNull
@@ -399,9 +436,10 @@ public class GagServiceTest {
 
         for(int i = 0; i < size; ++i) {
             DataSnapshot mockChild = mock(DataSnapshot.class);
+            when(mockChild.getKey()).thenReturn("key_" + String.valueOf(i));
 
             Gag gag = new Gag();
-            gag.fileName = i + ".jpg";
+            gag.fileName = "filename_" + i + ".jpg";
 
             when(mockChild.getValue(Gag.class)).thenReturn(gag);
 
@@ -411,6 +449,14 @@ public class GagServiceTest {
         when(mockDataSnapshot.getChildren()).thenReturn(children);
 
         return mockDataSnapshot;
+    }
+
+    private Gag createGag(String key, String fileName) {
+        Gag gag = new Gag();
+        gag.key = key;
+        gag.fileName = fileName;
+
+        return gag;
     }
 
     private void createMockStorageReferenceForTwoFiles(String firstFileName, String secondFileName) {
@@ -433,8 +479,10 @@ public class GagServiceTest {
 
     private List<Gag> createGagList(String... fileNames) {
         List<Gag> result = new ArrayList<>();
+        int i = 0;
         for(String fileName : fileNames) {
             Gag gag = new Gag();
+            gag.key = "key_" + String.valueOf(i++);
             gag.fileName = fileName;
             result.add(gag);
         }
