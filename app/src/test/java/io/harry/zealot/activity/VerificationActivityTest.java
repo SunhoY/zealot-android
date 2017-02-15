@@ -151,6 +151,20 @@ public class VerificationActivityTest {
         verify(mockGagService).verifyGag(expectedGag);
     }
 
+    @Test
+    public void onRejectClick_callsRejectGagWithSelectedGagViaGagService() throws Exception {
+        setMockPagerAdapter(1);
+        setGagsAreFetched(createGagList("filename_0.jpg", "filename_1.jpg"));
+
+        subject.onRejectClick();
+
+        Gag expectedGag = new Gag();
+        expectedGag.key = "key_" + 1;
+        expectedGag.fileName = "filename_1.jpg";
+
+        verify(mockGagService).rejectGag(expectedGag);
+    }
+
     private List<Gag> createGagList(String... fileNames) {
         List<Gag> result = new ArrayList<>();
         int i = 0;

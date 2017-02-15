@@ -70,4 +70,11 @@ public class VerificationActivity extends ZealotBaseActivity {
 
         gagService.verifyGag(gagList.get(currentItem));
     }
+
+    @OnClick(R.id.reject)
+    public void onRejectClick() {
+        int currentItem = verificationPager.getCurrentItem();
+
+        gagService.rejectGag(gagList.get(currentItem));
+    }
 }
