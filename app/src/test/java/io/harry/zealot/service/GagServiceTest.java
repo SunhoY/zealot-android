@@ -405,6 +405,7 @@ public class GagServiceTest {
     @Test
     public void rejectGag_getsStorageReferenceFromFirebaseHelper() throws Exception {
         setMockFirebaseStorage(ANY_FILE_NAME);
+        setMockFirebaseDatabase(ANY_KEY);
 
         subject.rejectGag(createGag(ANY_KEY, ANY_FILE_NAME));
 
@@ -414,6 +415,8 @@ public class GagServiceTest {
     @Test
     public void rejectGag_getsChildWithFileName() throws Exception {
         setMockFirebaseStorage("delete_this.jpg");
+        setMockFirebaseDatabase(ANY_KEY);
+
 
         subject.rejectGag(createGag(ANY_KEY, "delete_this.jpg"));
 
@@ -423,10 +426,42 @@ public class GagServiceTest {
     @Test
     public void rejectGag_deletesFileFromStorage() throws Exception {
         setMockFirebaseStorage(ANY_FILE_NAME);
+        setMockFirebaseDatabase(ANY_KEY);
 
         subject.rejectGag(createGag(ANY_KEY, ANY_FILE_NAME));
 
         verify(mockStorageReference).delete();
+    }
+
+    @Test
+    public void rejectGag_getsGagDatabaseReferenceFromFirebase() throws Exception {
+        setMockFirebaseDatabase("delete_this");
+        setMockFirebaseStorage(ANY_FILE_NAME);
+
+        subject.rejectGag(createGag("delete_this", ANY_FILE_NAME));
+
+        verify(mockFirebaseHelper).getDatabaseReference("gags");
+    }
+
+    @Test
+    public void rejectGag_getsChildByKeyFromDatabaseReference() throws Exception {
+        setMockFirebaseDatabase("delete_this");
+        setMockFirebaseStorage(ANY_FILE_NAME);
+
+        subject.rejectGag(createGag("delete_this", ANY_FILE_NAME));
+
+        verify(mockDatabaseReference).child("delete_this");
+
+    }
+
+    @Test
+    public void rejectGag_deletesGagFromDatabase() throws Exception {
+        setMockFirebaseDatabase(ANY_KEY);
+        setMockFirebaseStorage(ANY_FILE_NAME);
+
+        subject.rejectGag(createGag(ANY_KEY, ANY_FILE_NAME));
+
+        verify(mockDatabaseReference).removeValue();
     }
 
     @NonNull

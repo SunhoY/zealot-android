@@ -119,12 +119,14 @@ public class GagService {
     public void verifyGag(Gag gag) {
         DatabaseReference gagReference = firebaseHelper.getDatabaseReference(GAGS_REFERENCE);
         DatabaseReference targetGagReference = gagReference.child(gag.key);
-        targetGagReference.child("verified").setValue(true);
+        targetGagReference.child(VERIFIED_FIELD).setValue(true);
     }
 
     public void rejectGag(Gag gag) {
         StorageReference storageReference = firebaseHelper.getStorageReference(GAGS_REFERENCE);
-        storageReference.child(gag.fileName);
-        storageReference.delete();
+        storageReference.child(gag.fileName).delete();
+
+        DatabaseReference databaseReference = firebaseHelper.getDatabaseReference(GAGS_REFERENCE);
+        databaseReference.child(gag.key).removeValue();
     }
 }
