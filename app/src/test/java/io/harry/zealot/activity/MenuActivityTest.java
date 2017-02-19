@@ -2,6 +2,8 @@ package io.harry.zealot.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -27,6 +29,7 @@ import javax.inject.Inject;
 
 import io.harry.zealot.BuildConfig;
 import io.harry.zealot.TestZealotApplication;
+import io.harry.zealot.dialog.DialogService;
 import io.harry.zealot.helper.BitmapHelper;
 import io.harry.zealot.helper.PermissionHelper;
 import io.harry.zealot.service.GagService;
@@ -35,6 +38,7 @@ import io.harry.zealot.service.ServiceCallback;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -54,11 +58,15 @@ public class MenuActivityTest {
 
     @Mock
     Uri mockUri;
+    @Mock
+    ProgressDialog mockProgressDialog;
 
     @Inject
     BitmapHelper bitmapHelper;
     @Inject
     GagService mockGagService;
+    @Inject
+    DialogService mockDialogService;
     @Inject
     PermissionHelper mockPermissionHelper;
 
@@ -126,6 +134,7 @@ public class MenuActivityTest {
 
         intentAssert.hasAction(Intent.ACTION_PICK);
         intentAssert.hasData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intentAssert.hasExtra(Intent.EXTRA_LOCAL_ONLY, true);
     }
 
     @Test
@@ -183,6 +192,7 @@ public class MenuActivityTest {
         when(bitmapHelper.getBitmapByURI(uri)).thenReturn(bitmapToBeReturned);
         when(bitmapToBeReturned.getWidth()).thenReturn(bitmapWidth);
         when(bitmapToBeReturned.getHeight()).thenReturn(bitmapHeight);
+        when(mockDialogService.getProgressDialog(any(Context.class), anyString())).thenReturn(mockProgressDialog);
 
         subject.onActivityResult(PICK_PHOTO, Activity.RESULT_OK, data);
     }
@@ -207,9 +217,19 @@ public class MenuActivityTest {
         Bitmap mockBitmap = mock(Bitmap.class);
         when(bitmapHelper.scaleBitmap(eq(mockBitmap), anyInt(), anyInt())).thenReturn(mockBitmap);
 
-        assumePhotoHasBeenPicked(mockUri, mockBitmap, 900, 1200);
+        assumePhotoHasBeenPicked(mockUri, mockBitmap, INT_DOESNT_MATTER, INT_DOESNT_MATTER);
 
         verify(mockGagService).uploadGag(eq(mockBitmap), Matchers.<ServiceCallback<Void>>any());
+    }
+
+    @Test
+    public void onActivityResult_showsProgressDialog() throws Exception {
+        Bitmap mockBitmap = mock(Bitmap.class);
+
+        assumePhotoHasBeenPicked(mockUri, mockBitmap, INT_DOESNT_MATTER, INT_DOESNT_MATTER);
+
+        verify(mockDialogService).getProgressDialog(subject, "아재력을 퍼뜨리고 있습니다.");
+        verify(mockProgressDialog).show();
     }
 
     @Test
@@ -224,6 +244,20 @@ public class MenuActivityTest {
         serviceCallbackCaptor.getValue().onSuccess(null);
 
         assertThat(ShadowToast.getTextOfLatestToast()).isEqualTo("업로드 완료");
+    }
+
+    @Test
+    public void onSuccessUpload_hidesProgressDialog() throws Exception {
+        Bitmap mockBitmap = mock(Bitmap.class);
+        when(bitmapHelper.scaleBitmap(eq(mockBitmap), anyInt(), anyInt())).thenReturn(mockBitmap);
+
+        assumePhotoHasBeenPicked(mockUri, mockBitmap, INT_DOESNT_MATTER, INT_DOESNT_MATTER);
+
+        verify(mockGagService).uploadGag(eq(mockBitmap), serviceCallbackCaptor.capture());
+
+        serviceCallbackCaptor.getValue().onSuccess(null);
+
+        verify(mockProgressDialog).hide();
     }
 
     @Test

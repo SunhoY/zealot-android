@@ -62,6 +62,6 @@ public class DialogServiceTest {
         ProgressDialog latestDialog = (ProgressDialog) ShadowDialog.getLatestDialog();
         ShadowProgressDialog shadowAlertDialog = shadowOf(latestDialog);
 
-        assertThat(shadowAlertDialog.getProgressStyle()).isEqualTo(Theme_AppCompat_Light_Dialog_Alert);
+        assertThat(shadowAlertDialog).isEqualTo(Theme_AppCompat_Light_Dialog_Alert);
     }
 }

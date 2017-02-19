@@ -1,6 +1,7 @@
 package io.harry.zealot.activity;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -16,6 +17,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.harry.zealot.R;
+import io.harry.zealot.dialog.DialogService;
 import io.harry.zealot.helper.BitmapHelper;
 import io.harry.zealot.helper.PermissionHelper;
 import io.harry.zealot.service.GagService;
@@ -33,6 +35,8 @@ public class MenuActivity extends ZealotBaseActivity {
     GagService gagService;
     @Inject
     PermissionHelper permissionHelper;
+    @Inject
+    DialogService dialogService;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,7 +67,10 @@ public class MenuActivity extends ZealotBaseActivity {
                     REQUEST_FOR_READ_EXTERNAL_STORAGE);
         }
         else {
-            startActivityForResult(new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI), PICK_PHOTO);
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+
+            startActivityForResult(intent, PICK_PHOTO);
         }
     }
 
@@ -114,9 +121,13 @@ public class MenuActivity extends ZealotBaseActivity {
 
         Bitmap scaledBitmap = bitmapHelper.scaleBitmap(bitmap, size.width, size.height);
 
+        final ProgressDialog progressDialog = dialogService.getProgressDialog(this, "아재력을 퍼뜨리고 있습니다.");
+        progressDialog.show();
+
         gagService.uploadGag(scaledBitmap, new ServiceCallback<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
+                progressDialog.hide();
                 Toast.makeText(MenuActivity.this, R.string.upload_complete, Toast.LENGTH_LONG).show();
             }
         });
