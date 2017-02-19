@@ -19,6 +19,7 @@ import io.harry.zealot.module.TestAjaeScoreModule;
 import io.harry.zealot.module.TestAnimationModule;
 import io.harry.zealot.module.TestContentModule;
 import io.harry.zealot.module.TestContextModule;
+import io.harry.zealot.module.TestDialogModule;
 import io.harry.zealot.module.TestFirebaseModule;
 import io.harry.zealot.module.TestGagTestModule;
 import io.harry.zealot.module.TestGoogleFaceApiModule;
@@ -36,6 +37,7 @@ import io.harry.zealot.service.GagServiceTest;
         TestGoogleFaceApiModule.class,
         TestContentModule.class,
         TestAjaeScoreModule.class,
+        TestDialogModule.class,
 })
 public interface TestZealotComponent extends ZealotComponent {
     void inject(SplashActivity splashActivity);

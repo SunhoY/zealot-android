@@ -1,5 +1,6 @@
 package io.harry.zealot.activity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -39,6 +40,7 @@ import io.harry.zealot.BuildConfig;
 import io.harry.zealot.R;
 import io.harry.zealot.TestZealotApplication;
 import io.harry.zealot.adapter.GagPagerAdapter;
+import io.harry.zealot.dialog.DialogService;
 import io.harry.zealot.helper.AnimationHelper;
 import io.harry.zealot.model.Gag;
 import io.harry.zealot.range.AjaeScoreRange;
@@ -57,6 +59,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -91,6 +94,8 @@ public class TestAjaeActivityTest {
     @Inject
     GagPagerAdapterWrapper mockGagPagerAdapterWrapper;
     @Inject
+    DialogService mockDialogService;
+    @Inject
     GagService mockGagService;
     @Inject
     ZealotFaceDetectorWrapper mockFaceDetectorWrapper;
@@ -104,13 +109,14 @@ public class TestAjaeActivityTest {
     @Mock
     GagPagerAdapter mockGagPagerAdapter;
     @Mock
+    ProgressDialog mockProgressDialog;
+    @Mock
     com.google.android.gms.vision.CameraSource mockCameraSource;
 
     @Captor
     ArgumentCaptor<ServiceCallback<List<Gag>>> gagListServiceCallbackCaptor;
     @Captor
     ArgumentCaptor<ServiceCallback<List<Uri>>> uriListServiceCallbackCaptor;
-
 
     @Before
     public void setUp() throws Exception {
@@ -128,6 +134,7 @@ public class TestAjaeActivityTest {
         when(mockFaceDetectorWrapper.getFaceDetector(any(Context.class))).thenReturn(testFaceDetector);
         when(mockCameraSourceWrapper.getCameraSource(any(Context.class), eq(testFaceDetector))).thenReturn(mockCameraSource);
         when(mockAnimationHelper.loadAnimation(R.animator.scale_xy)).thenReturn(mockScaleXYAnimation);
+        when(mockDialogService.getProgressDialog(any(Context.class), anyString())).thenReturn(mockProgressDialog);
 
         subject = Robolectric.buildActivity(TestAjaeActivity.class).create().get();
         subject.gagPager.setAdapter(mockGagPagerAdapter);
@@ -176,9 +183,9 @@ public class TestAjaeActivityTest {
     public void onCreate_getPagerAdapterWithRequestSizeOfFragments() throws Exception {
         verify(mockGagService).getGags(anyInt(), anyBoolean(), gagListServiceCallbackCaptor.capture());
 
-        gagListServiceCallbackCaptor.getValue().onSuccess(createGagList("gag1.png", "gag2.png"));
+        gagListServiceCallbackCaptor.getValue().onSuccess(new ArrayList<Gag>());
 
-        verify(mockGagService).getGagImageUris(eq(Arrays.asList("gag1.png", "gag2.png")),
+        verify(mockGagService).getGagImageUris(anyListOf(String.class),
                 uriListServiceCallbackCaptor.capture());
 
         List<Uri> actualUris = Arrays.asList(Uri.parse("http://gag1.png"),
@@ -197,20 +204,44 @@ public class TestAjaeActivityTest {
     public void onCreate_setAdapterOnViewPager() throws Exception {
         verify(mockGagService).getGags(anyInt(), anyBoolean(), gagListServiceCallbackCaptor.capture());
 
-        gagListServiceCallbackCaptor.getValue().onSuccess(createGagList("gag1.png", "gag2.png"));
+        gagListServiceCallbackCaptor.getValue().onSuccess(new ArrayList<Gag>());
 
-        verify(mockGagService).getGagImageUris(eq(Arrays.asList("gag1.png", "gag2.png")),
+        verify(mockGagService).getGagImageUris(anyListOf(String.class),
                 uriListServiceCallbackCaptor.capture());
-
-        List<Uri> actualUris = Arrays.asList(Uri.parse("http://gag1.png"),
-                Uri.parse("http://gag2.png"), Uri.parse("http://gag3.png"));
 
         when(mockGagPagerAdapterWrapper.getGagPagerAdapter(any(FragmentManager.class), anyListOf(Uri.class)))
                 .thenReturn(mockGagPagerAdapter);
 
-        uriListServiceCallbackCaptor.getValue().onSuccess(actualUris);
+        uriListServiceCallbackCaptor.getValue().onSuccess(new ArrayList<Uri>());
 
         assertThat(gagPager.getAdapter()).isEqualTo(mockGagPagerAdapter);
+    }
+
+    @Test
+    public void afterGettingListOfUri_hidesProgressDialog() throws Exception {
+        verify(mockGagService).getGags(anyInt(), anyBoolean(), gagListServiceCallbackCaptor.capture());
+
+        gagListServiceCallbackCaptor.getValue().onSuccess(new ArrayList<Gag>());
+
+        verify(mockGagService).getGagImageUris(anyListOf(String.class),
+                uriListServiceCallbackCaptor.capture());
+
+        when(mockGagPagerAdapterWrapper.getGagPagerAdapter(any(FragmentManager.class), anyListOf(Uri.class)))
+                .thenReturn(mockGagPagerAdapter);
+
+        uriListServiceCallbackCaptor.getValue().onSuccess(new ArrayList<Uri>());
+
+        verify(mockProgressDialog).hide();
+    }
+
+    @Test
+    public void onCreate_getsLoadingDialogFromDialogService() throws Exception {
+        verify(mockDialogService).getProgressDialog(subject, "아재력을 모으고 있습니다.");
+    }
+
+    @Test
+    public void onCreate_showsProgressDialog() throws Exception {
+        verify(mockProgressDialog).show();
     }
 
     @Test

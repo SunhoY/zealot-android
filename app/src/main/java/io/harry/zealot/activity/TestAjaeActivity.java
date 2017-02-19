@@ -1,5 +1,6 @@
 package io.harry.zealot.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.harry.zealot.R;
 import io.harry.zealot.adapter.GagPagerAdapter;
+import io.harry.zealot.dialog.DialogService;
 import io.harry.zealot.helper.AnimationHelper;
 import io.harry.zealot.listener.FaceListener;
 import io.harry.zealot.model.Gag;
@@ -78,12 +80,15 @@ public class TestAjaeActivity extends ZealotBaseActivity implements FaceListener
     AnimationHelper animationHelper;
     @Inject
     AjaeScoreRange ajaeScoreRange;
+    @Inject
+    DialogService dialogService;
 
     private GagPagerAdapter gagPagerAdapter;
     private FaceDetector faceDetector;
     private MultiProcessor<Face> faceProcessor;
     private ZealotFaceFactory faceFactory;
     private CameraSource cameraSource;
+    private ProgressDialog progressDialog;
 
     private float ajaePower = .0f;
 
@@ -106,6 +111,9 @@ public class TestAjaeActivity extends ZealotBaseActivity implements FaceListener
 
         testAjaePreview.setCameraSource(cameraSource);
 
+        progressDialog = dialogService.getProgressDialog(this, getString(R.string.gaining_ajae_power));
+        progressDialog.show();
+
         int requestCount = getResources().getInteger(R.integer.gag_count);
         gagService.getGags(requestCount, true, new ServiceCallback<List<Gag>>() {
             @Override
@@ -116,6 +124,7 @@ public class TestAjaeActivity extends ZealotBaseActivity implements FaceListener
                         gagPagerAdapter = gagPagerAdapterWrapper.getGagPagerAdapter(
                                 getSupportFragmentManager(), result);
                         gagPager.setAdapter(gagPagerAdapter);
+                        progressDialog.hide();
                     }
                 });
             }
