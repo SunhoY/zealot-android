@@ -67,10 +67,7 @@ public class MenuActivity extends ZealotBaseActivity {
                     REQUEST_FOR_READ_EXTERNAL_STORAGE);
         }
         else {
-            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-
-            startActivityForResult(intent, PICK_PHOTO);
+            startPhotoPickActivity();
         }
     }
 
@@ -87,7 +84,7 @@ public class MenuActivity extends ZealotBaseActivity {
         switch (requestCode) {
             case REQUEST_FOR_READ_EXTERNAL_STORAGE: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    startActivityForResult(new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI), PICK_PHOTO);
+                    startPhotoPickActivity();
                 } else {
                     Toast.makeText(this, R.string.storage_permission_needed, Toast.LENGTH_LONG).show();
                 }
@@ -141,6 +138,13 @@ public class MenuActivity extends ZealotBaseActivity {
             this.width = width;
             this.height = height;
         }
+    }
+
+    private void startPhotoPickActivity() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+
+        startActivityForResult(intent, PICK_PHOTO);
     }
 
     private BitmapSize calculateSize(int width, int height, int maxWidth) {

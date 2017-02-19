@@ -1,6 +1,8 @@
 package io.harry.zealot.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.widget.Button;
 
 import org.assertj.android.api.content.IntentAssert;
@@ -8,6 +10,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
@@ -21,6 +27,8 @@ import butterknife.ButterKnife;
 import io.harry.zealot.BuildConfig;
 import io.harry.zealot.R;
 import io.harry.zealot.TestZealotApplication;
+import io.harry.zealot.dialog.DialogService;
+import io.harry.zealot.dialog.DialogService.InputDialogListener;
 import io.harry.zealot.range.AjaeScoreRange;
 import io.harry.zealot.state.AjaePower;
 import io.harry.zealot.view.AjaeImageView;
@@ -31,7 +39,10 @@ import static io.harry.zealot.state.AjaePower.FULL;
 import static io.harry.zealot.state.AjaePower.MEDIUM;
 import static io.harry.zealot.state.AjaePower.NO;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.RuntimeEnvironment.application;
 import static org.robolectric.Shadows.shadowOf;
@@ -56,11 +67,19 @@ public class ResultActivityTest {
 
     @Inject
     AjaeScoreRange mockAjaeScoreRange;
+    @Inject
+    DialogService mockDialogService;
+
+    @Mock
+    AlertDialog mockInputDialog;
+
+    @Captor
+    ArgumentCaptor<InputDialogListener> inputDialogListenerCaptor;
 
     private Field ajaeStateOfPercentageView;
+
     private Field ajaeStateOfImageView;
     private Field ajaeStateOfMessageView;
-
     private AjaePower ajaeStateValueOfPercentageView;
     private AjaePower ajaeStateValueOfImageView;
     private AjaePower ajaeStateValueOfMessageView;
@@ -68,6 +87,8 @@ public class ResultActivityTest {
 
     @Before
     public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+
         ajaeStateOfPercentageView = AjaePercentageView.class.getDeclaredField("ajaePower");
         ajaeStateOfPercentageView.setAccessible(true);
 
@@ -85,6 +106,8 @@ public class ResultActivityTest {
         ((TestZealotApplication)application).getZealotComponent().inject(this);
 
         when(mockAjaeScoreRange.getRange(anyInt())).thenReturn(ajaePower);
+        when(mockDialogService.getInputDialog(any(Context.class), any(InputDialogListener.class)))
+                .thenReturn(mockInputDialog);
 
         subject = Robolectric.buildActivity(ResultActivity.class).withIntent(intent).create().get();
         ButterKnife.bind(this, subject);
@@ -144,10 +167,32 @@ public class ResultActivityTest {
     }
 
     @Test
-    public void clickOnShare_sendShareIntentWithLink() throws Exception {
+    public void clickOnShare_getsInputDialogFromDialogService() throws Exception {
+        setUp(SCORE_NO_MATTER, POWER_NO_MATTER);
+
+        share.performClick();
+
+        verify(mockDialogService).getInputDialog(eq(subject), any(InputDialogListener.class));
+    }
+
+    @Test
+    public void clickOnShare_showsInputDialog() throws Exception {
+        setUp(SCORE_NO_MATTER, POWER_NO_MATTER);
+
+        share.performClick();
+
+        verify(mockInputDialog).show();
+    }
+
+    @Test
+    public void clickOnShare_onConfirmClick_launchesShareIntentWithNickNameAndScore() throws Exception {
         setUp(80, POWER_NO_MATTER);
 
         share.performClick();
+
+        verify(mockDialogService).getInputDialog(eq(subject), inputDialogListenerCaptor.capture());
+
+        inputDialogListenerCaptor.getValue().onConfirm("진성아재");
 
         Intent chooser = shadowOf(subject).getNextStartedActivity();
 
@@ -161,7 +206,7 @@ public class ResultActivityTest {
         IntentAssert originalIntentAssert = new IntentAssert(originalIntent);
 
         assertThat(originalIntentAssert.hasAction(Intent.ACTION_SEND));
-        assertThat(originalIntentAssert.hasExtra(Intent.EXTRA_TEXT, "https://harryzealot.herokuapp.com?score=80&nickName=사용자"));
+        assertThat(originalIntentAssert.hasExtra(Intent.EXTRA_TEXT, "https://harryzealot.herokuapp.com?score=80&nickName=진성아재"));
         assertThat(originalIntentAssert.hasType("text/plain"));
     }
 }
