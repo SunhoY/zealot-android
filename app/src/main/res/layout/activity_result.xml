@@ -46,6 +46,7 @@
         />
 
     <Button
+        fontPath="fonts/BMDOHYEON.ttf"
         style="@style/Widget.AppCompat.Button.Colored"
         android:id="@+id/test_again"
         android:layout_width="200dp"

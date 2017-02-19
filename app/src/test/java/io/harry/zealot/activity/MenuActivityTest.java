@@ -134,7 +134,6 @@ public class MenuActivityTest {
 
         intentAssert.hasAction(Intent.ACTION_PICK);
         intentAssert.hasData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        intentAssert.hasData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intentAssert.hasExtra(Intent.EXTRA_LOCAL_ONLY, true);
     }
 
