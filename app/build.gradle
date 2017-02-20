@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion '25'
+    compileSdkVersion 25
+    buildToolsVersion '25.0.2'
 
     defaultConfig {
         applicationId "io.harry.zealot"
         minSdkVersion 19
-        targetSdkVersion 23
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -26,11 +26,11 @@ android {
     }
 }
 
-def supportLibraryVersion = "24.1.1"
-def playServiceVersion = "9.4.0"
+def supportLibraryVersion = "25.1.1"
+def playServiceVersion = "10.0.1"
 def daggerVersion = "2.6"
 def butterKnifeVersion = "8.2.1"
-def robolectricVersion = "3.1.1"
+def robolectricVersion = "3.2.2"
 def powermockVersion = "1.6.6"
 
 dependencies {
@@ -44,11 +44,12 @@ dependencies {
     compile "com.google.firebase:firebase-storage:${playServiceVersion}"
     compile "com.google.firebase:firebase-database:${playServiceVersion}"
     compile "com.google.firebase:firebase-auth:${playServiceVersion}"
+
     compile "com.google.android.gms:play-services:${playServiceVersion}"
 
     compile "com.google.dagger:dagger:${daggerVersion}"
 
-    compile "com.google.guava:guava:19.0"
+    compile "com.google.guava:guava:20.0"
 
     compile "com.jakewharton:butterknife:${butterKnifeVersion}"
 
@@ -57,6 +58,9 @@ dependencies {
     compile 'org.projectlombok:lombok:1.16.10'
 
     compile 'com.squareup.picasso:picasso:2.5.2'
+
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
 
     compile 'com.akexorcist:RoundCornerProgressBar:2.0.3'
 

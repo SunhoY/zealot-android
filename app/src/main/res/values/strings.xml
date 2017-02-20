@@ -32,4 +32,6 @@
     <string name="gaining_ajae_power">아재력을 모으고 있습니다.</string>
     <string name="enter_your_nick_name">닉네임을 입력해주세요.</string>
     <string name="cancel">취소</string>
+    <string name="google_api_backend">https://www.googleapis.com/</string>
+    <string name="packing_your_ajae_power">%1$s 님의 아재력을 포장하고 있습니다.</string>
 </resources>

@@ -1,9 +1,12 @@
 package io.harry.zealot.activity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.widget.Button;
+
+import com.google.common.collect.ImmutableMap;
 
 import org.assertj.android.api.content.IntentAssert;
 import org.junit.After;
@@ -12,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
@@ -19,6 +23,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.lang.reflect.Field;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -27,6 +32,7 @@ import butterknife.ButterKnife;
 import io.harry.zealot.BuildConfig;
 import io.harry.zealot.R;
 import io.harry.zealot.TestZealotApplication;
+import io.harry.zealot.api.UrlShortenerApi;
 import io.harry.zealot.dialog.DialogService;
 import io.harry.zealot.dialog.DialogService.InputDialogListener;
 import io.harry.zealot.range.AjaeScoreRange;
@@ -34,6 +40,8 @@ import io.harry.zealot.state.AjaePower;
 import io.harry.zealot.view.AjaeImageView;
 import io.harry.zealot.view.AjaeMessageView;
 import io.harry.zealot.view.AjaePercentageView;
+import retrofit2.Call;
+import retrofit2.Response;
 
 import static io.harry.zealot.state.AjaePower.FULL;
 import static io.harry.zealot.state.AjaePower.MEDIUM;
@@ -41,7 +49,10 @@ import static io.harry.zealot.state.AjaePower.NO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyMap;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.RuntimeEnvironment.application;
@@ -52,6 +63,7 @@ import static org.robolectric.Shadows.shadowOf;
 public class ResultActivityTest {
     private static final int SCORE_NO_MATTER = 80;
     private static final AjaePower POWER_NO_MATTER = AjaePower.FULL;
+    private static final String NICK_NAME_NO_MATTER = "nick name does not matter";
     private ResultActivity subject;
 
     @BindView(R.id.ajae_score)
@@ -69,9 +81,15 @@ public class ResultActivityTest {
     AjaeScoreRange mockAjaeScoreRange;
     @Inject
     DialogService mockDialogService;
+    @Inject
+    UrlShortenerApi mockUrlShortenerApi;
 
     @Mock
     AlertDialog mockInputDialog;
+    @Mock
+    Call<Map<String, Object>> mockMapCall;
+    @Mock
+    ProgressDialog mockProgressDialog;
 
     @Captor
     ArgumentCaptor<InputDialogListener> inputDialogListenerCaptor;
@@ -172,7 +190,7 @@ public class ResultActivityTest {
 
         share.performClick();
 
-        verify(mockDialogService).getInputDialog(eq(subject), any(InputDialogListener.class));
+        verify(mockDialogService).getInputDialog(eq(subject), eq(subject));
     }
 
     @Test
@@ -185,14 +203,49 @@ public class ResultActivityTest {
     }
 
     @Test
-    public void clickOnShare_onConfirmClick_launchesShareIntentWithNickNameAndScore() throws Exception {
+    public void onConfirmClick_launchesShareIntentWithNickNameAndScore() throws Exception {
         setUp(80, POWER_NO_MATTER);
 
-        share.performClick();
+        setUpNickNameConfirmed(mockMapCall, mockProgressDialog, "진성아재");
 
-        verify(mockDialogService).getInputDialog(eq(subject), inputDialogListenerCaptor.capture());
+        verify(mockUrlShortenerApi).shortenedUrl(ImmutableMap.of("longUrl", "https://harryzealot.herokuapp.com?score=80&nickName=진성아재"),
+                application.getString(R.string.google_api_key));
+    }
 
-        inputDialogListenerCaptor.getValue().onConfirm("진성아재");
+    @Test
+    public void onConfirmClick_enqueuesPostCall() throws Exception {
+        setUp(SCORE_NO_MATTER, POWER_NO_MATTER);
+
+        setUpNickNameConfirmed(mockMapCall, mockProgressDialog, NICK_NAME_NO_MATTER);
+
+        verify(mockMapCall).enqueue(subject);
+    }
+
+    private void setUpNickNameConfirmed(Call<Map<String, Object>> mockMapCall, ProgressDialog mockProgressDialog, String nickNameNoMatter) {
+        when(mockUrlShortenerApi.shortenedUrl(Matchers.<Map<String, String>>any(), anyString())).thenReturn(mockMapCall);
+        when(mockDialogService.getProgressDialog(any(Context.class), anyString())).thenReturn(mockProgressDialog);
+
+        subject.onConfirm(nickNameNoMatter);
+    }
+
+    @Test
+    public void onConfirmClick_showsProgressDialog_withMessage() throws Exception {
+        setUp(SCORE_NO_MATTER, POWER_NO_MATTER);
+
+        setUpNickNameConfirmed(mockMapCall, mockProgressDialog, "진성아재");
+
+        verify(mockDialogService).getProgressDialog(subject, "진성아재 님의 아재력을 포장하고 있습니다.");
+        verify(mockProgressDialog).show();
+    }
+
+    @Test
+    public void onUrlShortenerResponse_launchesSendIntent() throws Exception {
+        setUp(SCORE_NO_MATTER, POWER_NO_MATTER);
+
+        Map<String, Object> body = ImmutableMap.<String, Object>of("id", "https://goo.gl");
+        Response<Map<String, Object>> response = Response.success(body);
+
+        subject.onResponse(mockMapCall, response);
 
         Intent chooser = shadowOf(subject).getNextStartedActivity();
 
@@ -206,7 +259,25 @@ public class ResultActivityTest {
         IntentAssert originalIntentAssert = new IntentAssert(originalIntent);
 
         assertThat(originalIntentAssert.hasAction(Intent.ACTION_SEND));
-        assertThat(originalIntentAssert.hasExtra(Intent.EXTRA_TEXT, "https://harryzealot.herokuapp.com?score=80&nickName=진성아재"));
+        assertThat(originalIntentAssert.hasExtra(Intent.EXTRA_TEXT, "https://goo.gl"));
         assertThat(originalIntentAssert.hasType("text/plain"));
+    }
+
+    @Test
+    public void onUrlShortenerResponse_hidesProgressDialog_whenDialogIsNotNull() throws Exception {
+        setUp(SCORE_NO_MATTER, POWER_NO_MATTER);
+
+        Map<String, Object> body = ImmutableMap.<String, Object>of("id", "does not matter");
+        Response<Map<String, Object>> response = Response.success(body);
+
+        subject.onResponse(mockMapCall, response);
+
+        verify(mockProgressDialog, never()).hide();
+
+        setUpNickNameConfirmed(mockMapCall, mockProgressDialog, NICK_NAME_NO_MATTER);
+
+        subject.onResponse(mockMapCall, response);
+
+        verify(mockProgressDialog).hide();
     }
 }
