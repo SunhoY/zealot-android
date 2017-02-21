@@ -4,7 +4,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.harry.zealot.api.UrlShortenerApi;
+import io.harry.zealot.api.UrlShortenApi;
 import retrofit2.Retrofit;
 
 import static org.mockito.Mockito.mock;
@@ -19,7 +19,7 @@ public class TestGoogleApiModule {
 
     @Provides
     @Singleton
-    UrlShortenerApi provideUrlShortenerApi() {
-        return mock(UrlShortenerApi.class);
+    UrlShortenApi provideUrlShortenApi() {
+        return mock(UrlShortenApi.class);
     }
 }

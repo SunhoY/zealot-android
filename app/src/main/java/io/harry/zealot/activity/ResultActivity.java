@@ -16,7 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.harry.zealot.R;
-import io.harry.zealot.api.UrlShortenerApi;
+import io.harry.zealot.api.UrlShortenApi;
 import io.harry.zealot.dialog.DialogService;
 import io.harry.zealot.range.AjaeScoreRange;
 import io.harry.zealot.state.AjaePower;
@@ -43,7 +43,7 @@ public class ResultActivity extends ZealotBaseActivity implements DialogService.
     @Inject
     AjaeScoreRange ajaeScoreRange;
     @Inject
-    UrlShortenerApi urlShortenerApi;
+    UrlShortenApi urlShortenApi;
     @Inject
     DialogService dialogService;
     private ProgressDialog progressDialog;
@@ -88,7 +88,7 @@ public class ResultActivity extends ZealotBaseActivity implements DialogService.
         String serverURL = getString(R.string.server_url);
         String shareURL = serverURL + "?score=" + ajaeScoreText + "&nickName=" + nickName;
 
-        Call<Map<String, Object>> mapCall = urlShortenerApi.shortenedUrl(ImmutableMap.of("longUrl", shareURL), getString(R.string.google_api_key));
+        Call<Map<String, Object>> mapCall = urlShortenApi.shortenedUrl(ImmutableMap.of("longUrl", shareURL), getString(R.string.google_api_key));
 
         progressDialog = dialogService.getProgressDialog(this, getString(R.string.packing_your_ajae_power, nickName));
         progressDialog.show();

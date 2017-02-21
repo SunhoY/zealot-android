@@ -5,7 +5,7 @@ import android.content.Context;
 import dagger.Module;
 import dagger.Provides;
 import io.harry.zealot.R;
-import io.harry.zealot.api.UrlShortenerApi;
+import io.harry.zealot.api.UrlShortenApi;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -21,7 +21,7 @@ public class GoogleApiModule {
     }
 
     @Provides
-    UrlShortenerApi provideUrlshortenerApi(Retrofit retrofit) {
-        return retrofit.create(UrlShortenerApi.class);
+    UrlShortenApi provideUrlshortenApi(Retrofit retrofit) {
+        return retrofit.create(UrlShortenApi.class);
     }
 }

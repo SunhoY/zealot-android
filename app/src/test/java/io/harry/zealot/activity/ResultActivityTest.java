@@ -32,7 +32,7 @@ import butterknife.ButterKnife;
 import io.harry.zealot.BuildConfig;
 import io.harry.zealot.R;
 import io.harry.zealot.TestZealotApplication;
-import io.harry.zealot.api.UrlShortenerApi;
+import io.harry.zealot.api.UrlShortenApi;
 import io.harry.zealot.dialog.DialogService;
 import io.harry.zealot.dialog.DialogService.InputDialogListener;
 import io.harry.zealot.range.AjaeScoreRange;
@@ -49,7 +49,6 @@ import static io.harry.zealot.state.AjaePower.NO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyMap;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
@@ -82,7 +81,7 @@ public class ResultActivityTest {
     @Inject
     DialogService mockDialogService;
     @Inject
-    UrlShortenerApi mockUrlShortenerApi;
+    UrlShortenApi mockUrlShortenApi;
 
     @Mock
     AlertDialog mockInputDialog;
@@ -208,7 +207,7 @@ public class ResultActivityTest {
 
         setUpNickNameConfirmed(mockMapCall, mockProgressDialog, "진성아재");
 
-        verify(mockUrlShortenerApi).shortenedUrl(ImmutableMap.of("longUrl", "https://harryzealot.herokuapp.com?score=80&nickName=진성아재"),
+        verify(mockUrlShortenApi).shortenedUrl(ImmutableMap.of("longUrl", "https://harryzealot.herokuapp.com?score=80&nickName=진성아재"),
                 application.getString(R.string.google_api_key));
     }
 
@@ -222,7 +221,7 @@ public class ResultActivityTest {
     }
 
     private void setUpNickNameConfirmed(Call<Map<String, Object>> mockMapCall, ProgressDialog mockProgressDialog, String nickNameNoMatter) {
-        when(mockUrlShortenerApi.shortenedUrl(Matchers.<Map<String, String>>any(), anyString())).thenReturn(mockMapCall);
+        when(mockUrlShortenApi.shortenedUrl(Matchers.<Map<String, String>>any(), anyString())).thenReturn(mockMapCall);
         when(mockDialogService.getProgressDialog(any(Context.class), anyString())).thenReturn(mockProgressDialog);
 
         subject.onConfirm(nickNameNoMatter);

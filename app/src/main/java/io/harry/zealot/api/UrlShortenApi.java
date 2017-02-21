@@ -7,7 +7,7 @@ import retrofit2.http.Body;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
-public interface UrlShortenerApi {
+public interface UrlShortenApi {
     @POST("urlshortener/v1/url")
     Call<Map<String, Object>> shortenedUrl(@Body Map<String, String> body, @Query("key") String apiKey);
 }
