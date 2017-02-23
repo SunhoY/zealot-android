@@ -207,7 +207,7 @@ public class ResultActivityTest {
 
         setUpNickNameConfirmed(mockMapCall, mockProgressDialog, "진성아재");
 
-        verify(mockUrlShortenApi).shortenedUrl(ImmutableMap.of("longUrl", "https://harryzealot.herokuapp.com?score=80&nickName=진성아재"),
+        verify(mockUrlShortenApi).shortenedUrl(ImmutableMap.of("longUrl", "https://zealot-react.herokuapp.com?score=80&nickName=진성아재"),
                 application.getString(R.string.google_api_key));
     }
 
