@@ -17,6 +17,7 @@ import com.google.firebase.storage.UploadTask;
 
 import org.joda.time.DateTimeUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -40,6 +41,8 @@ import io.harry.zealot.TestZealotApplication;
 import io.harry.zealot.helper.FirebaseHelper;
 import io.harry.zealot.model.Gag;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
@@ -75,7 +78,7 @@ public class GagServiceTest {
     @Mock
     StorageReference mockImageReference;
     @Mock
-    ServiceCallback<List<Gag>> mockStringListServiceCallback;
+    ServiceCallback<List<Gag>> mockGagListServiceCallback;
     @Mock
     ServiceCallback<List<Uri>> mockUriListServiceCallback;
     @Mock
@@ -104,6 +107,9 @@ public class GagServiceTest {
 
     @Captor
     ArgumentCaptor<ByteArrayOutputStream> byteArrayOutputStreamCaptor;
+    @Captor
+    ArgumentCaptor<List<Gag>> gagListServiceCallbackCaptor;
+
     private GagService subject;
 
     @Before
@@ -123,37 +129,37 @@ public class GagServiceTest {
 
     @Test
     public void getGags_getsGagsReferenceFromFirebaseHelper() throws Exception {
-        subject.getGags(ANY_COUNT, ANY_VERIFIED, mockStringListServiceCallback);
+        subject.getGags(ANY_COUNT, ANY_VERIFIED, mockGagListServiceCallback);
 
         verify(mockFirebaseHelper).getDatabaseReference("gags");
     }
 
     @Test
     public void getGags_queriesOrderingByVerifiedField() throws Exception {
-        subject.getGags(ANY_COUNT, ANY_VERIFIED, mockStringListServiceCallback);
+        subject.getGags(ANY_COUNT, ANY_VERIFIED, mockGagListServiceCallback);
 
         verify(mockDatabaseReference).orderByChild("verified");
     }
 
     @Test
     public void getGags_queriesVerifiedValueIsTrue() throws Exception {
-        subject.getGags(ANY_COUNT, true, mockStringListServiceCallback);
+        subject.getGags(ANY_COUNT, true, mockGagListServiceCallback);
 
         verify(mockQuery).equalTo(true);
     }
 
     @Test
     public void getGags_queriesVerifiedValueIsFalse() throws Exception {
-        subject.getGags(ANY_COUNT, false, mockStringListServiceCallback);
+        subject.getGags(ANY_COUNT, false, mockGagListServiceCallback);
 
         verify(mockQuery).equalTo(false);
     }
 
     @Test
-    public void getGags_queriesLastNumberOfItemsFromDatabaseReference() throws Exception {
-        subject.getGags(10, ANY_VERIFIED, mockStringListServiceCallback);
+    public void getGags_queriesSampleSize100ItemsFromDatabaseReference() throws Exception {
+        subject.getGags(10, ANY_VERIFIED, mockGagListServiceCallback);
 
-        verify(mockQuery).limitToLast(10);
+        verify(mockQuery).limitToLast(100);
     }
 
     @Test
@@ -161,22 +167,30 @@ public class GagServiceTest {
         when(mockFirebaseHelper.getDatabaseReference("gags")).thenReturn(mockDatabaseReference);
         when(mockDatabaseReference.limitToLast(anyInt())).thenReturn(mockQuery);
 
-        subject.getGags(ANY_COUNT, ANY_VERIFIED, mockStringListServiceCallback);
+        subject.getGags(ANY_COUNT, ANY_VERIFIED, mockGagListServiceCallback);
 
         verify(mockQuery).addListenerForSingleValueEvent(any(ValueEventListener.class));
     }
 
     @Test
-    public void getGags_extractsFileNamesFromDataSnapshot() throws Exception {
+    @Ignore
+    public void getGags_shufflesItemsFromFirebase() throws Exception {
+        fail("power mock test should be here");
+    }
+
+    @Test
+    public void getGags_extractsFileNamesFromDataSnapshot_andPassRequestedNumberOfItemsToServiceCallback() throws Exception {
         DataSnapshot mockDataSnapshot = createMockDataSnapshotForJPGImages(3);
 
-        subject.getGags(ANY_COUNT, ANY_VERIFIED, mockStringListServiceCallback);
+        subject.getGags(2, ANY_VERIFIED, mockGagListServiceCallback);
 
         verify(mockQuery).addListenerForSingleValueEvent(valueEventListenerCaptor.capture());
 
         valueEventListenerCaptor.getValue().onDataChange(mockDataSnapshot);
 
-        verify(mockStringListServiceCallback).onSuccess(createGagList("filename_0.jpg", "filename_1.jpg", "filename_2.jpg"));
+        verify(mockGagListServiceCallback).onSuccess(gagListServiceCallbackCaptor.capture());
+
+        assertThat(gagListServiceCallbackCaptor.getValue().size()).isEqualTo(2);
     }
 
     @Test

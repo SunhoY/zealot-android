@@ -19,6 +19,7 @@ import org.joda.time.DateTime;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -32,6 +33,7 @@ public class GagService {
     private static final String FILE_NAME_FIELD = "fileName";
     private static final String VERIFIED_FIELD = "verified";
     private static final String GAGS_REFERENCE = "gags";
+    private static final int SAMPLE_SIZE = 100;
 
     @Inject
     FirebaseHelper firebaseHelper;
@@ -40,10 +42,10 @@ public class GagService {
         ((ZealotApplication) context).getZealotComponent().inject(this);
     }
 
-    public void getGags(int requestCount, boolean verified, final ServiceCallback<List<Gag>> serviceCallback) {
+    public void getGags(final int requestCount, boolean verified, final ServiceCallback<List<Gag>> serviceCallback) {
         DatabaseReference gagReference = firebaseHelper.getDatabaseReference(GAGS_REFERENCE);
 
-        Query query = gagReference.orderByChild(VERIFIED_FIELD).equalTo(verified).limitToLast(requestCount);
+        Query query = gagReference.orderByChild(VERIFIED_FIELD).equalTo(verified).limitToLast(SAMPLE_SIZE);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -57,7 +59,11 @@ public class GagService {
                     result.add(gag);
                 }
 
-                serviceCallback.onSuccess(result);
+                //TODO Powermock integration with robolectric is now broken
+                //todo fix it when robolectric 3.3 is released
+                Collections.shuffle(result);
+
+                serviceCallback.onSuccess(result.subList(0, requestCount));
             }
 
             @Override
