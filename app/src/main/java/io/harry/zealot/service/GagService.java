@@ -63,7 +63,7 @@ public class GagService {
                 //todo fix it when robolectric 3.3 is released
                 Collections.shuffle(result);
 
-                serviceCallback.onSuccess(result.subList(0, requestCount));
+                serviceCallback.onSuccess(result.subList(0, Math.min(requestCount, result.size())));
             }
 
             @Override
