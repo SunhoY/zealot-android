@@ -194,6 +194,21 @@ public class GagServiceTest {
     }
 
     @Test
+    public void getGags_retrievesLowerNumberOfGagsAmongFullListAndRequestedList() throws Exception {
+        DataSnapshot mockDataSnapshot = createMockDataSnapshotForJPGImages(3);
+
+        subject.getGags(10, ANY_VERIFIED, mockGagListServiceCallback);
+
+        verify(mockQuery).addListenerForSingleValueEvent(valueEventListenerCaptor.capture());
+
+        valueEventListenerCaptor.getValue().onDataChange(mockDataSnapshot);
+
+        verify(mockGagListServiceCallback).onSuccess(gagListServiceCallbackCaptor.capture());
+
+        assertThat(gagListServiceCallbackCaptor.getValue().size()).isEqualTo(3);
+    }
+
+    @Test
     public void getGagImageUris_getsStorageReferenceFromFirebaseHelper() throws Exception {
         subject.getGagImageUris(new ArrayList<String>(), mockUriListServiceCallback);
 
