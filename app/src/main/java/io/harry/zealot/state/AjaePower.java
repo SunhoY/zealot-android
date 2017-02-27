@@ -1,7 +1,9 @@
 package io.harry.zealot.state;
 
 public enum AjaePower {
-    NO,
+    NONE,
+    RARE,
     MEDIUM,
-    FULL
+    WELL_DONE,
+    BURNT
 }

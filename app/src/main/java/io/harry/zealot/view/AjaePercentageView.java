@@ -20,14 +20,20 @@ public class AjaePercentageView extends TextView implements AjaeAware {
         this.ajaePower = ajaePower;
 
         switch (ajaePower) {
-            case FULL:
-                setTextColor(ContextCompat.getColor(getContext(), R.color.full_ajae));
+            case BURNT:
+                setTextColor(ContextCompat.getColor(getContext(), R.color.burnt_ajae));
+                break;
+            case WELL_DONE:
+                setTextColor(ContextCompat.getColor(getContext(), R.color.well_done_ajae));
                 break;
             case MEDIUM:
                 setTextColor(ContextCompat.getColor(getContext(), R.color.medium_ajae));
                 break;
-            case NO:
-                setTextColor(ContextCompat.getColor(getContext(), R.color.not_ajae));
+            case RARE:
+                setTextColor(ContextCompat.getColor(getContext(), R.color.rare_ajae));
+                break;
+            case NONE:
+                setTextColor(ContextCompat.getColor(getContext(), R.color.none_ajae));
                 break;
         }
     }

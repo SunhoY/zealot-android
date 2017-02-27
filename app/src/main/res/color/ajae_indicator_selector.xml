@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item app:state_ajae_full="true" android:color="@color/full_ajae"/>
+    <item app:state_ajae_full="true" android:color="@color/burnt_ajae"/>
     <item app:state_ajae_medium="true" android:color="@color/medium_ajae"/>
-    <item app:state_ajae_not="true" android:color="@color/not_ajae"/>
+    <item app:state_ajae_not="true" android:color="@color/none_ajae"/>
 </selector>

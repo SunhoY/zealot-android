@@ -10,7 +10,9 @@
     <color name="orange">#FFC300</color>
     <color name="gray">#CCCCCC</color>
     <color name="light_green">#82E0AA</color>
-    <color name="full_ajae">#f53f90</color>
+    <color name="burnt_ajae">#f53f90</color>
+    <color name="well_done_ajae">#f53f90</color>
     <color name="medium_ajae">#f6a623</color>
-    <color name="not_ajae">#3ff5a2</color>
+    <color name="rare_ajae">#f6a623</color>
+    <color name="none_ajae">#3ff5a2</color>
 </resources>

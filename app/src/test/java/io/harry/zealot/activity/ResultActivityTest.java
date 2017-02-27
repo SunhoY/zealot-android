@@ -43,9 +43,9 @@ import io.harry.zealot.view.AjaePercentageView;
 import retrofit2.Call;
 import retrofit2.Response;
 
-import static io.harry.zealot.state.AjaePower.FULL;
+import static io.harry.zealot.state.AjaePower.BURNT;
 import static io.harry.zealot.state.AjaePower.MEDIUM;
-import static io.harry.zealot.state.AjaePower.NO;
+import static io.harry.zealot.state.AjaePower.NONE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -61,7 +61,7 @@ import static org.robolectric.Shadows.shadowOf;
 @Config(constants = BuildConfig.class)
 public class ResultActivityTest {
     private static final int SCORE_NO_MATTER = 80;
-    private static final AjaePower POWER_NO_MATTER = AjaePower.FULL;
+    private static final AjaePower POWER_NO_MATTER = AjaePower.BURNT;
     private static final String NICK_NAME_NO_MATTER = "nick name does not matter";
     private ResultActivity subject;
 
@@ -149,11 +149,11 @@ public class ResultActivityTest {
 
     @Test
     public void onCreate_changesStateOfScoreAndAjaeImageAsNotAjae_whenScoreIsUnder70() throws Exception {
-        setUp(SCORE_NO_MATTER, AjaePower.NO);
+        setUp(SCORE_NO_MATTER, AjaePower.NONE);
 
-        assertThat(ajaeStateValueOfPercentageView).isEqualTo(NO);
-        assertThat(ajaeStateValueOfMessageView).isEqualTo(NO);
-        assertThat(ajaeStateValueOfImageView).isEqualTo(NO);
+        assertThat(ajaeStateValueOfPercentageView).isEqualTo(NONE);
+        assertThat(ajaeStateValueOfMessageView).isEqualTo(NONE);
+        assertThat(ajaeStateValueOfImageView).isEqualTo(NONE);
     }
 
     @Test
@@ -167,11 +167,11 @@ public class ResultActivityTest {
 
     @Test
     public void onCreate_changesStateOfScoreAndAjaeImageAsFullAjae_whenScoreIsOver90() throws Exception {
-        setUp(SCORE_NO_MATTER, AjaePower.FULL);
+        setUp(SCORE_NO_MATTER, AjaePower.BURNT);
 
-        assertThat(ajaeStateValueOfPercentageView).isEqualTo(FULL);
-        assertThat(ajaeStateValueOfMessageView).isEqualTo(FULL);
-        assertThat(ajaeStateValueOfImageView).isEqualTo(FULL);
+        assertThat(ajaeStateValueOfPercentageView).isEqualTo(BURNT);
+        assertThat(ajaeStateValueOfMessageView).isEqualTo(BURNT);
+        assertThat(ajaeStateValueOfImageView).isEqualTo(BURNT);
     }
 
     @Test

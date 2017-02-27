@@ -10,9 +10,11 @@
     <string name="upload_complete">업로드 완료</string>
     <string name="share_ajae_gag">아재개그 퍼뜨리기</string>
     <string name="score">%1$d 점</string>
-    <string name="not_ajae_message">자라나는\n어린새싹</string>
-    <string name="medium_ajae_message">아직까진\n젊은오빠</string>
-    <string name="real_ajae_message">빼박캔트\n진성아재</string>
+    <string name="none_ajae_message">아직까진\n젊은오빠</string>
+    <string name="rare_ajae_message">자라나는\n어린새싹</string>
+    <string name="medium_ajae_message">아재력이\n물씬물씬</string>
+    <string name="well_done_ajae_message">잘익었다\n농축아재</string>
+    <string name="burnt_ajae_message">빼박캔트\n진성아재</string>
     <string name="result_with_exclamation">결과!</string>
     <string name="x_percentage" formatted="false">%1$d %%</string>
     <string name="your_ajae_power">당신의 아재력</string>

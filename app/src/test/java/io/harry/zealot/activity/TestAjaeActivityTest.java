@@ -127,7 +127,7 @@ public class TestAjaeActivityTest {
         mockScaleXYAnimation = mock(Animation.class);
 
         //TODO: has to be realistic
-        when(mockAjaeScoreRange.getRange(anyInt())).thenReturn(AjaePower.FULL);
+        when(mockAjaeScoreRange.getRange(anyInt())).thenReturn(AjaePower.BURNT);
         when(mockGagPagerAdapterWrapper.getGagPagerAdapter(any(FragmentManager.class), anyListOf(Uri.class)))
             .thenReturn(mockGagPagerAdapter);
         when(mockGagPagerAdapter.getCount()).thenReturn(GAG_PAGE_COUNT);

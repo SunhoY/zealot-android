@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item app:state_ajae_full="true" android:drawable="@drawable/full_ajae"/>
-    <item app:state_ajae_medium="true" android:drawable="@drawable/medium_ajae"/>
-    <item app:state_ajae_not="true" android:drawable="@drawable/not_ajae"/>
+    <item app:state_ajae_full="true" android:drawable="@drawable/well_done_ajae"/>
+    <item app:state_ajae_medium="true" android:drawable="@drawable/rare_ajae"/>
+    <item app:state_ajae_not="true" android:drawable="@drawable/none_ajae"/>
 </selector>

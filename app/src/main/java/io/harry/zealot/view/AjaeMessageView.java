@@ -20,17 +20,25 @@ public class AjaeMessageView extends TextView implements AjaeAware {
         this.ajaePower = ajaePower;
 
         switch (ajaePower) {
-            case FULL:
-                setText(R.string.real_ajae_message);
-                setTextColor(ContextCompat.getColor(getContext(), R.color.full_ajae));
+            case BURNT:
+                setText(R.string.burnt_ajae_message);
+                setTextColor(ContextCompat.getColor(getContext(), R.color.burnt_ajae));
+                break;
+            case WELL_DONE:
+                setText(R.string.well_done_ajae_message);
+                setTextColor(ContextCompat.getColor(getContext(), R.color.well_done_ajae));
                 break;
             case MEDIUM:
                 setText(R.string.medium_ajae_message);
                 setTextColor(ContextCompat.getColor(getContext(), R.color.medium_ajae));
                 break;
-            case NO:
-                setText(R.string.not_ajae_message);
-                setTextColor(ContextCompat.getColor(getContext(), R.color.not_ajae));
+            case RARE:
+                setText(R.string.rare_ajae_message);
+                setTextColor(ContextCompat.getColor(getContext(), R.color.rare_ajae));
+                break;
+            case NONE:
+                setText(R.string.none_ajae_message);
+                setTextColor(ContextCompat.getColor(getContext(), R.color.none_ajae));
                 break;
         }
     }

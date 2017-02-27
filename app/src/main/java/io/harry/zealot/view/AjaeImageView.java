@@ -18,18 +18,21 @@ public class AjaeImageView extends ImageView implements AjaeAware {
         this.ajaePower = ajaePower;
 
         switch (ajaePower) {
-            case NO: {
-                setImageResource(R.drawable.not_ajae);
+            case BURNT:
+                setImageResource(R.drawable.burnt_ajae);
                 break;
-            }
-            case MEDIUM: {
+            case WELL_DONE:
+                setImageResource(R.drawable.well_done_ajae);
+                break;
+            case MEDIUM:
                 setImageResource(R.drawable.medium_ajae);
                 break;
-            }
-            case FULL: {
-                setImageResource(R.drawable.full_ajae);
+            case RARE:
+                setImageResource(R.drawable.rare_ajae);
                 break;
-            }
+            case NONE:
+                setImageResource(R.drawable.none_ajae);
+                break;
         }
     }
 }
