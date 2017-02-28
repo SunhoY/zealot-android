@@ -21,7 +21,7 @@
 
     <io.harry.zealot.view.AjaePercentageView
         fontPath="fonts/BMDOHYEON.ttf"
-        android:id="@+id/ajae_score"
+        android:id="@+id/ajae_percentage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="160dp"
@@ -36,8 +36,8 @@
         />
 
     <io.harry.zealot.view.AjaeImageView
-        android:id="@+id/result_image"
-        android:layout_below="@id/ajae_score"
+        android:id="@+id/ajae_image"
+        android:layout_below="@id/ajae_percentage"
         android:layout_marginTop="32dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -74,7 +74,7 @@
         />
 
     <io.harry.zealot.view.AjaeMessageView
-        android:id="@+id/result_message"
+        android:id="@+id/ajae_message"
         fontPath="fonts/BMDOHYEON.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

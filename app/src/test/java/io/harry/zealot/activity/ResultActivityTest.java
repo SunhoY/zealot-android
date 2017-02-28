@@ -9,7 +9,6 @@ import android.widget.Button;
 import com.google.common.collect.ImmutableMap;
 
 import org.assertj.android.api.content.IntentAssert;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +21,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import java.lang.reflect.Field;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -36,6 +34,9 @@ import io.harry.zealot.api.UrlShortenApi;
 import io.harry.zealot.dialog.DialogService;
 import io.harry.zealot.dialog.DialogService.InputDialogListener;
 import io.harry.zealot.range.AjaeScoreRange;
+import io.harry.zealot.shadow.view.ShadowAjaeImageView;
+import io.harry.zealot.shadow.view.ShadowAjaeMessageView;
+import io.harry.zealot.shadow.view.ShadowAjaePercentageView;
 import io.harry.zealot.state.AjaePower;
 import io.harry.zealot.view.AjaeImageView;
 import io.harry.zealot.view.AjaeMessageView;
@@ -58,23 +59,23 @@ import static org.robolectric.RuntimeEnvironment.application;
 import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class)
+@Config(constants = BuildConfig.class, shadows = {ShadowAjaeImageView.class, ShadowAjaeMessageView.class, ShadowAjaePercentageView.class})
 public class ResultActivityTest {
     private static final int SCORE_NO_MATTER = 80;
-    private static final AjaePower POWER_NO_MATTER = AjaePower.BURNT;
+    private static final AjaePower POWER_NO_MATTER = BURNT;
     private static final String NICK_NAME_NO_MATTER = "nick name does not matter";
     private ResultActivity subject;
 
-    @BindView(R.id.ajae_score)
-    AjaePercentageView ajaeScore;
-    @BindView(R.id.test_again)
-    Button testAgain;
-    @BindView(R.id.result_message)
-    AjaeMessageView resultMessage;
+    @BindView(R.id.ajae_percentage)
+    AjaePercentageView ajaePercentage;
+    @BindView(R.id.ajae_message)
+    AjaeMessageView ajaeMessage;
+    @BindView(R.id.ajae_image)
+    AjaeImageView ajaeImage;
     @BindView(R.id.share_sns)
     Button share;
-    @BindView(R.id.result_image)
-    AjaeImageView resultImage;
+    @BindView(R.id.test_again)
+    Button testAgain;
 
     @Inject
     AjaeScoreRange mockAjaeScoreRange;
@@ -93,27 +94,13 @@ public class ResultActivityTest {
     @Captor
     ArgumentCaptor<InputDialogListener> inputDialogListenerCaptor;
 
-    private Field ajaeStateOfPercentageView;
-
-    private Field ajaeStateOfImageView;
-    private Field ajaeStateOfMessageView;
-    private AjaePower ajaeStateValueOfPercentageView;
-    private AjaePower ajaeStateValueOfImageView;
-    private AjaePower ajaeStateValueOfMessageView;
-
+    private ShadowAjaeImageView shadowAjaeImageView;
+    private ShadowAjaePercentageView shadowAjaePercentageView;
+    private ShadowAjaeMessageView shadowAjaeMessageView;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-
-        ajaeStateOfPercentageView = AjaePercentageView.class.getDeclaredField("ajaePower");
-        ajaeStateOfPercentageView.setAccessible(true);
-
-        ajaeStateOfImageView = AjaeImageView.class.getDeclaredField("ajaePower");
-        ajaeStateOfImageView.setAccessible(true);
-
-        ajaeStateOfMessageView = AjaeMessageView.class.getDeclaredField("ajaePower");
-        ajaeStateOfMessageView.setAccessible(true);
     }
 
     public void setUp(int score, AjaePower ajaePower) throws Exception {
@@ -129,49 +116,31 @@ public class ResultActivityTest {
         subject = Robolectric.buildActivity(ResultActivity.class).withIntent(intent).create().get();
         ButterKnife.bind(this, subject);
 
-        ajaeStateValueOfPercentageView = (AjaePower) ajaeStateOfPercentageView.get(this.ajaeScore);
-        ajaeStateValueOfImageView = (AjaePower) ajaeStateOfImageView.get(resultImage);
-        ajaeStateValueOfMessageView = (AjaePower) ajaeStateOfMessageView.get(resultMessage);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        ajaeStateOfPercentageView.setAccessible(false);
-        ajaeStateOfImageView.setAccessible(false);
+        shadowAjaeImageView = (ShadowAjaeImageView) shadowOf(ajaeImage);
+        shadowAjaeMessageView = (ShadowAjaeMessageView) shadowOf(ajaeMessage);
+        shadowAjaePercentageView = (ShadowAjaePercentageView) shadowOf(ajaePercentage);
     }
 
     @Test
     public void onCreate_setsAjaeScore() throws Exception {
         setUp(95, POWER_NO_MATTER);
 
-        assertThat(ajaeScore.getText()).isEqualTo("95 %");
+        assertThat(ajaePercentage.getText()).isEqualTo("95 %");
     }
 
     @Test
-    public void onCreate_changesStateOfScoreAndAjaeImageAsNotAjae_whenScoreIsUnder70() throws Exception {
-        setUp(SCORE_NO_MATTER, AjaePower.NONE);
+    public void onCreate_setsAjaePowerOnCustomViews() throws Exception {
+        setUp(SCORE_NO_MATTER, NONE);
 
-        assertThat(ajaeStateValueOfPercentageView).isEqualTo(NONE);
-        assertThat(ajaeStateValueOfMessageView).isEqualTo(NONE);
-        assertThat(ajaeStateValueOfImageView).isEqualTo(NONE);
-    }
+        assertThat(shadowAjaeMessageView.getAjaePower()).isEqualTo(NONE);
+        assertThat(shadowAjaePercentageView.getAjaePower()).isEqualTo(NONE);
+        assertThat(shadowAjaeImageView.getAjaePower()).isEqualTo(NONE);
 
-    @Test
-    public void onCreate_changesStateOfScoreAndAjaeImageAsMediumAjae_whenScoreIsBetween70And90() throws Exception {
-        setUp(SCORE_NO_MATTER, AjaePower.MEDIUM);
+        setUp(SCORE_NO_MATTER, MEDIUM);
 
-        assertThat(ajaeStateValueOfPercentageView).isEqualTo(MEDIUM);
-        assertThat(ajaeStateValueOfMessageView).isEqualTo(MEDIUM);
-        assertThat(ajaeStateValueOfImageView).isEqualTo(MEDIUM);
-    }
-
-    @Test
-    public void onCreate_changesStateOfScoreAndAjaeImageAsFullAjae_whenScoreIsOver90() throws Exception {
-        setUp(SCORE_NO_MATTER, AjaePower.BURNT);
-
-        assertThat(ajaeStateValueOfPercentageView).isEqualTo(BURNT);
-        assertThat(ajaeStateValueOfMessageView).isEqualTo(BURNT);
-        assertThat(ajaeStateValueOfImageView).isEqualTo(BURNT);
+        assertThat(shadowAjaeMessageView.getAjaePower()).isEqualTo(MEDIUM);
+        assertThat(shadowAjaePercentageView.getAjaePower()).isEqualTo(MEDIUM);
+        assertThat(shadowAjaeImageView.getAjaePower()).isEqualTo(MEDIUM);
     }
 
     @Test

@@ -33,12 +33,12 @@ public class ResultActivity extends ZealotBaseActivity implements DialogService.
     private String ajaeScoreText;
     private AlertDialog nickNameInputDialog;
 
-    @BindView(R.id.ajae_score)
-    AjaePercentageView ajaeScore;
-    @BindView(R.id.result_image)
-    AjaeImageView resultImage;
-    @BindView(R.id.result_message)
-    AjaeMessageView resultMessage;
+    @BindView(R.id.ajae_percentage)
+    AjaePercentageView ajaePercentage;
+    @BindView(R.id.ajae_image)
+    AjaeImageView ajaeImage;
+    @BindView(R.id.ajae_message)
+    AjaeMessageView ajaeMessage;
 
     @Inject
     AjaeScoreRange ajaeScoreRange;
@@ -59,17 +59,13 @@ public class ResultActivity extends ZealotBaseActivity implements DialogService.
         int score = getIntent().getIntExtra(AJAE_SCORE, 100);
 
         ajaeScoreText = String.valueOf(score);
-        ajaeScore.setText(getResources().getString(R.string.x_percentage, score));
+        ajaePercentage.setText(getResources().getString(R.string.x_percentage, score));
 
-        AjaePower ajaePower = getAjaeStateByScore(score);
+        AjaePower ajaePower = ajaeScoreRange.getRange(score);
 
-        ajaeScore.setAjaePower(ajaePower);
-        resultImage.setAjaePower(ajaePower);
-        resultMessage.setAjaePower(ajaePower);
-    }
-
-    private AjaePower getAjaeStateByScore(int score) {
-        return ajaeScoreRange.getRange(score);
+        ajaePercentage.setAjaePower(ajaePower);
+        ajaeImage.setAjaePower(ajaePower);
+        ajaeMessage.setAjaePower(ajaePower);
     }
 
     @OnClick(R.id.test_again)

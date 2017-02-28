@@ -8,15 +8,11 @@ import io.harry.zealot.R;
 import io.harry.zealot.state.AjaePower;
 
 public class AjaeImageView extends ImageView implements AjaeAware {
-    private AjaePower ajaePower;
-
     public AjaeImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
     public void setAjaePower(AjaePower ajaePower) {
-        this.ajaePower = ajaePower;
-
         switch (ajaePower) {
             case BURNT:
                 setImageResource(R.drawable.burnt_ajae);

@@ -9,16 +9,12 @@ import io.harry.zealot.R;
 import io.harry.zealot.state.AjaePower;
 
 public class AjaeMessageView extends TextView implements AjaeAware {
-    private AjaePower ajaePower;
-
     public AjaeMessageView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
     @Override
     public void setAjaePower(AjaePower ajaePower) {
-        this.ajaePower = ajaePower;
-
         switch (ajaePower) {
             case BURNT:
                 setText(R.string.burnt_ajae_message);
