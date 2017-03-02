@@ -7,25 +7,23 @@
     android:layout_height="match_parent"
     android:background="@drawable/background">
 
-    <TextView
-        fontPath="fonts/BMDOHYEON.ttf"
+    <io.harry.zealot.view.AjaeImageView
+        android:id="@+id/ajae_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/result_with_exclamation"
-        android:textColor="#ffffff"
-        android:textSize="48sp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
-        />
+        android:src="@drawable/ajae_image_selector"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="14dp" />
+
 
     <io.harry.zealot.view.AjaePercentageView
         fontPath="fonts/BMDOHYEON.ttf"
         android:id="@+id/ajae_percentage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="160dp"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="32dp"
+        android:layout_above="@id/ajae_image"
         tools:text="94"
         android:textSize="48sp"
         android:textColor="@color/ajae_indicator_selector"
@@ -35,28 +33,16 @@
         android:shadowRadius="1.0"
         />
 
-    <io.harry.zealot.view.AjaeImageView
-        android:id="@+id/ajae_image"
-        android:layout_below="@id/ajae_percentage"
-        android:layout_marginTop="32dp"
+    <TextView
+        fontPath="fonts/BMDOHYEON.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ajae_image_selector"
+        android:text="@string/result_with_exclamation"
+        android:textColor="#ffffff"
+        android:textSize="48sp"
         android:layout_centerHorizontal="true"
-        />
-
-    <Button
-        fontPath="fonts/BMDOHYEON.ttf"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:id="@+id/test_again"
-        android:layout_width="200dp"
-        android:layout_height="60dp"
-        android:text="@string/test_again"
-        android:textSize="20sp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="40dp"
-        android:textColor="@color/blue"
+        android:layout_above="@id/ajae_percentage"
+        android:layout_marginBottom="20dp"
         />
 
     <Button
@@ -64,7 +50,6 @@
         android:id="@+id/share_sns"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/test_again"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
         android:layout_marginEnd="20dp"
@@ -79,9 +64,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="빼박캔트\n진성아재"
+        android:layout_below="@id/ajae_image"
+        android:layout_marginTop="20dp"
         android:textSize="48sp"
         android:textColor="#ffffff"
-        android:layout_above="@+id/test_again"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        />
+
+    <Button
+        fontPath="fonts/BMDOHYEON.ttf"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:id="@+id/test_again"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
+        android:text="@string/test_again"
+        android:textSize="20sp"
+        android:textColor="@color/blue"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/ajae_message"
+        android:layout_marginTop="20dp"
+        />
 
 </RelativeLayout>
