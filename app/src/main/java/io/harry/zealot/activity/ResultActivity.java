@@ -1,5 +1,6 @@
 package io.harry.zealot.activity;
 
+import android.animation.ValueAnimator;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import butterknife.OnClick;
 import io.harry.zealot.R;
 import io.harry.zealot.api.UrlShortenApi;
 import io.harry.zealot.dialog.DialogService;
+import io.harry.zealot.helper.AnimationHelper;
 import io.harry.zealot.range.AjaeScoreRange;
 import io.harry.zealot.state.AjaePower;
 import io.harry.zealot.view.AjaeImageView;
@@ -30,8 +32,9 @@ import retrofit2.Response;
 public class ResultActivity extends ZealotBaseActivity implements DialogService.InputDialogListener, Callback<Map<String, Object>> {
     private static final String AJAE_SCORE = "ajaeScore";
 
-    private String ajaeScoreText;
     private AlertDialog nickNameInputDialog;
+    private ProgressDialog progressDialog;
+    private int ajaePercentageValue;
 
     @BindView(R.id.ajae_percentage)
     AjaePercentageView ajaePercentage;
@@ -46,7 +49,9 @@ public class ResultActivity extends ZealotBaseActivity implements DialogService.
     UrlShortenApi urlShortenApi;
     @Inject
     DialogService dialogService;
-    private ProgressDialog progressDialog;
+    @Inject
+    AnimationHelper animationHelper;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,12 +61,17 @@ public class ResultActivity extends ZealotBaseActivity implements DialogService.
         setContentView(R.layout.activity_result);
         ButterKnife.bind(this);
 
-        int score = getIntent().getIntExtra(AJAE_SCORE, 100);
+        ajaePercentageValue = getIntent().getIntExtra(AJAE_SCORE, 100);
 
-        ajaeScoreText = String.valueOf(score);
-        ajaePercentage.setText(getResources().getString(R.string.x_percentage, score));
+        ValueAnimator valueIncreaseAnimator = animationHelper.getValueIncreaseAnimator(ajaePercentageValue, 2000);
+        valueIncreaseAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                ajaePercentage.setText(getResources().getString(R.string.x_percentage, (int) animation.getAnimatedValue()));
+            }
+        });
 
-        AjaePower ajaePower = ajaeScoreRange.getRange(score);
+        AjaePower ajaePower = ajaeScoreRange.getRange(ajaePercentageValue);
 
         ajaePercentage.setAjaePower(ajaePower);
         ajaeImage.setAjaePower(ajaePower);
@@ -82,7 +92,7 @@ public class ResultActivity extends ZealotBaseActivity implements DialogService.
     @Override
     public void onConfirm(String nickName) {
         String serverURL = getString(R.string.server_url);
-        String shareURL = serverURL + "?score=" + ajaeScoreText + "&nickName=" + nickName;
+        String shareURL = serverURL + "?score=" + ajaePercentageValue + "&nickName=" + nickName;
 
         Call<Map<String, Object>> mapCall = urlShortenApi.shortenedUrl(ImmutableMap.of("longUrl", shareURL), getString(R.string.google_api_key));
 

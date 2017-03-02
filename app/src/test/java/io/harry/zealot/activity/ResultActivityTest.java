@@ -1,5 +1,7 @@
 package io.harry.zealot.activity;
 
+import android.animation.ValueAnimator;
+import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -33,6 +35,7 @@ import io.harry.zealot.TestZealotApplication;
 import io.harry.zealot.api.UrlShortenApi;
 import io.harry.zealot.dialog.DialogService;
 import io.harry.zealot.dialog.DialogService.InputDialogListener;
+import io.harry.zealot.helper.AnimationHelper;
 import io.harry.zealot.range.AjaeScoreRange;
 import io.harry.zealot.shadow.view.ShadowAjaeImageView;
 import io.harry.zealot.shadow.view.ShadowAjaeMessageView;
@@ -52,6 +55,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -83,6 +87,8 @@ public class ResultActivityTest {
     DialogService mockDialogService;
     @Inject
     UrlShortenApi mockUrlShortenApi;
+    @Inject
+    AnimationHelper mockAnimationHelper;
 
     @Mock
     AlertDialog mockInputDialog;
@@ -90,9 +96,13 @@ public class ResultActivityTest {
     Call<Map<String, Object>> mockMapCall;
     @Mock
     ProgressDialog mockProgressDialog;
+    @Mock
+    ValueAnimator mockValueIncreaseAnimation;
 
     @Captor
     ArgumentCaptor<InputDialogListener> inputDialogListenerCaptor;
+    @Captor
+    ArgumentCaptor<AnimatorUpdateListener> animatorUpdateListenerCaptor;
 
     private ShadowAjaeImageView shadowAjaeImageView;
     private ShadowAjaePercentageView shadowAjaePercentageView;
@@ -101,17 +111,18 @@ public class ResultActivityTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+
+        ((TestZealotApplication)application).getZealotComponent().inject(this);
     }
 
     public void setUp(int score, AjaePower ajaePower) throws Exception {
         Intent intent = new Intent();
         intent.putExtra("ajaeScore", score);
 
-        ((TestZealotApplication)application).getZealotComponent().inject(this);
-
         when(mockAjaeScoreRange.getRange(anyInt())).thenReturn(ajaePower);
         when(mockDialogService.getInputDialog(any(Context.class), any(InputDialogListener.class)))
                 .thenReturn(mockInputDialog);
+        when(mockAnimationHelper.getValueIncreaseAnimator(anyInt(), anyInt())).thenReturn(mockValueIncreaseAnimation);
 
         subject = Robolectric.buildActivity(ResultActivity.class).withIntent(intent).create().get();
         ButterKnife.bind(this, subject);
@@ -122,10 +133,39 @@ public class ResultActivityTest {
     }
 
     @Test
-    public void onCreate_setsAjaeScore() throws Exception {
+    public void onCreate_getsValueIncreasingAnimationFromAnimationHelperWithDuration2000() throws Exception {
         setUp(95, POWER_NO_MATTER);
 
-        assertThat(ajaePercentage.getText()).isEqualTo("95 %");
+        verify(mockAnimationHelper).getValueIncreaseAnimator(95, 2000);
+    }
+
+    @Test
+    public void addAnimatorListenerOnValueIncreaseAnimator_toChangePercentageValuesWithAnimation() throws Exception {
+        setUp(SCORE_NO_MATTER, POWER_NO_MATTER);
+
+        verify(mockValueIncreaseAnimation).addUpdateListener(any(AnimatorUpdateListener.class));
+    }
+
+    @Test
+    public void valueUpdateListener_changesPercentageText() throws Exception {
+        setUp(SCORE_NO_MATTER, POWER_NO_MATTER);
+
+        verify(mockValueIncreaseAnimation).addUpdateListener(animatorUpdateListenerCaptor.capture());
+
+        AnimatorUpdateListener animatorUpdateListener = animatorUpdateListenerCaptor.getValue();
+
+        ValueAnimator mockAnimator = mock(ValueAnimator.class);
+        when(mockAnimator.getAnimatedValue()).thenReturn(20);
+
+        animatorUpdateListener.onAnimationUpdate(mockAnimator);
+
+        assertThat(ajaePercentage.getText()).isEqualTo("20 %");
+
+        when(mockAnimator.getAnimatedValue()).thenReturn(30);
+
+        animatorUpdateListener.onAnimationUpdate(mockAnimator);
+
+        assertThat(ajaePercentage.getText()).isEqualTo("30 %");
     }
 
     @Test
