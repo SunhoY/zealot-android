@@ -6,6 +6,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
 public class AnimationHelper {
+    //TODO: not using this class from anywhere.
+    //TODO: 안쓰는 애니메이션도 정리할 것
     private final Context context;
 
     public AnimationHelper(Context context) {
