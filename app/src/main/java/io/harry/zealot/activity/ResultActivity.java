@@ -70,6 +70,7 @@ public class ResultActivity extends ZealotBaseActivity implements DialogService.
                 ajaePercentage.setText(getResources().getString(R.string.x_percentage, (int) animation.getAnimatedValue()));
             }
         });
+        valueIncreaseAnimator.start();
 
         AjaePower ajaePower = ajaeScoreRange.getRange(ajaePercentageValue);
 

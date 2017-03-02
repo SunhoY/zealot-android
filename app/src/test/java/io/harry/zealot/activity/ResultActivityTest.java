@@ -140,10 +140,17 @@ public class ResultActivityTest {
     }
 
     @Test
-    public void addAnimatorListenerOnValueIncreaseAnimator_toChangePercentageValuesWithAnimation() throws Exception {
+    public void onCreate_addsAnimatorListenerOnValueIncreaseAnimator_toChangePercentageValuesWithAnimation() throws Exception {
         setUp(SCORE_NO_MATTER, POWER_NO_MATTER);
 
         verify(mockValueIncreaseAnimation).addUpdateListener(any(AnimatorUpdateListener.class));
+    }
+
+    @Test
+    public void onCreate_startsAnimation() throws Exception {
+        setUp(SCORE_NO_MATTER, POWER_NO_MATTER);
+
+        verify(mockValueIncreaseAnimation).start();
     }
 
     @Test
