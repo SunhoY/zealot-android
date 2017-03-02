@@ -8,12 +8,16 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
+
 import javax.inject.Inject;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.harry.zealot.R;
@@ -38,6 +42,9 @@ public class MenuActivity extends ZealotBaseActivity {
     @Inject
     DialogService dialogService;
 
+    @BindView(R.id.intro)
+    LottieAnimationView intro;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +53,8 @@ public class MenuActivity extends ZealotBaseActivity {
         zealotComponent.inject(this);
 
         ButterKnife.bind(this);
+
+        intro.setImageAssetsFolder("images");
     }
 
     @OnClick(R.id.start_button)

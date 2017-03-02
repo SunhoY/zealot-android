@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 
+import com.airbnb.lottie.LottieAnimationView;
+
 import org.assertj.android.api.content.IntentAssert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,13 +29,17 @@ import org.robolectric.shadows.ShadowToast;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.harry.zealot.BuildConfig;
+import io.harry.zealot.R;
 import io.harry.zealot.TestZealotApplication;
 import io.harry.zealot.dialog.DialogService;
 import io.harry.zealot.helper.BitmapHelper;
 import io.harry.zealot.helper.PermissionHelper;
 import io.harry.zealot.service.GagService;
 import io.harry.zealot.service.ServiceCallback;
+import io.harry.zealot.shadow.view.ShadowLottieAnimationView;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -48,13 +54,15 @@ import static org.robolectric.RuntimeEnvironment.application;
 import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class)
+@Config(constants = BuildConfig.class, shadows = {ShadowLottieAnimationView.class})
 public class MenuActivityTest {
     private static final int PICK_PHOTO = 9;
     private static final int INT_DOESNT_MATTER = 0;
     private static final int REQUEST_FOR_READ_EXTERNAL_STORAGE = 0;
     private static final int REQUEST_FOR_CAMERA = 1;
+
     private MenuActivity subject;
+    private ShadowLottieAnimationView shadowIntro;
 
     @Mock
     Uri mockUri;
@@ -70,6 +78,9 @@ public class MenuActivityTest {
     @Inject
     PermissionHelper mockPermissionHelper;
 
+    @BindView(R.id.intro)
+    LottieAnimationView intro;
+
     @Captor
     ArgumentCaptor<ServiceCallback<Void>> serviceCallbackCaptor;
 
@@ -79,6 +90,15 @@ public class MenuActivityTest {
         ((TestZealotApplication)application).getZealotComponent().inject(this);
 
         subject = Robolectric.setupActivity(MenuActivity.class);
+
+        ButterKnife.bind(this, subject);
+
+        shadowIntro = (ShadowLottieAnimationView) shadowOf(intro);
+    }
+
+    @Test
+    public void onCreate_setsImageAssetFolderOnLottieAnimationView() throws Exception {
+        assertThat(shadowIntro.getImageAssetsFolder()).isEqualTo("images");
     }
 
     @Test

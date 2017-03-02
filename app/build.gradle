@@ -66,6 +66,8 @@ dependencies {
 
     compile 'joda-time:joda-time:2.9.7'
 
+    compile 'com.airbnb.android:lottie:1.5.2'
+
     apt "com.google.dagger:dagger-compiler:${daggerVersion}"
 
     apt "com.jakewharton:butterknife-compiler:${butterKnifeVersion}"
