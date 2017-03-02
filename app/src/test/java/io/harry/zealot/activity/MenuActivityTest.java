@@ -1,6 +1,7 @@
 package io.harry.zealot.activity;
 
 import android.Manifest;
+import android.animation.Animator;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -9,6 +10,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.view.View;
+import android.widget.Button;
 
 import com.airbnb.lottie.LottieAnimationView;
 
@@ -80,6 +83,10 @@ public class MenuActivityTest {
 
     @BindView(R.id.intro)
     LottieAnimationView intro;
+    @BindView(R.id.start_button)
+    Button start;
+    @BindView(R.id.upload_button)
+    Button upload;
 
     @Captor
     ArgumentCaptor<ServiceCallback<Void>> serviceCallbackCaptor;
@@ -99,6 +106,11 @@ public class MenuActivityTest {
     @Test
     public void onCreate_setsImageAssetFolderOnLottieAnimationView() throws Exception {
         assertThat(shadowIntro.getImageAssetsFolder()).isEqualTo("images");
+    }
+
+    @Test
+    public void onCreate_addsItSelfAsAnAnimationListener() throws Exception {
+        assertThat(shadowIntro.getAnimatorListener()).isEqualTo(subject);
     }
 
     @Test
@@ -289,5 +301,16 @@ public class MenuActivityTest {
         IntentAssert intentAssert = new IntentAssert(nextStartedActivity);
 
         intentAssert.hasComponent(application, CheckAdminActivity.class);
+    }
+
+    @Test
+    public void onAnimationEnd_showsStartAndUploadButtons() throws Exception {
+        assertThat(start.getVisibility()).isEqualTo(View.INVISIBLE);
+        assertThat(upload.getVisibility()).isEqualTo(View.INVISIBLE);
+
+        subject.onAnimationEnd(mock(Animator.class));
+
+        assertThat(start.getVisibility()).isEqualTo(View.VISIBLE);
+        assertThat(upload.getVisibility()).isEqualTo(View.VISIBLE);
     }
 }

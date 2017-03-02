@@ -31,6 +31,7 @@
         android:layout_marginBottom="100dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:visibility="invisible"
         />
 
     <Button
@@ -41,6 +42,7 @@
         android:layout_above="@id/start_button"
         android:text="@string/share_ajae_gag"
         android:layout_centerHorizontal="true"
+        android:visibility="invisible"
         />
 
     <Button
