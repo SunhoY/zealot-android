@@ -14,18 +14,14 @@
         android:theme="@style/AppTheme"
         android:name=".ZealotApplication"
         >
-        <activity android:name=".activity.SplashActivity"
-            android:screenOrientation="portrait"
-            >
+        <activity android:name=".activity.ZealotBaseActivity"/>
+        <activity android:name=".activity.MenuActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-        </activity>
-        <activity android:name=".activity.ZealotBaseActivity"/>
-        <activity android:name=".activity.MenuActivity"
-            android:screenOrientation="portrait"
-            />
+            </activity>
         <activity android:name=".activity.TestAjaeActivity"
             android:screenOrientation="portrait"
             />

@@ -5,7 +5,6 @@ import javax.inject.Singleton;
 import dagger.Component;
 import io.harry.zealot.activity.MenuActivity;
 import io.harry.zealot.activity.ResultActivity;
-import io.harry.zealot.activity.SplashActivity;
 import io.harry.zealot.activity.TestAjaeActivity;
 import io.harry.zealot.activity.VerificationActivity;
 import io.harry.zealot.fragment.GagFragment;
@@ -35,7 +34,6 @@ import io.harry.zealot.service.GagService;
         GoogleApiModule.class,
 })
 public interface ZealotComponent {
-    void inject(SplashActivity splashActivity);
     void inject(TestAjaeActivity testAjaeActivity);
     void inject(GagService gagService);
     void inject(GagFragment gagFragment);

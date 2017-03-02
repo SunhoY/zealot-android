@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import io.harry.zealot.BuildConfig;
-import io.harry.zealot.activity.SplashActivity;
+import io.harry.zealot.activity.MenuActivity;
 import io.harry.zealot.fragment.GagFragment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,7 +27,7 @@ public class GagPagerAdapterTest {
 
     @Before
     public void setUp() throws Exception {
-        FragmentManager supportFragmentManager = Robolectric.buildActivity(SplashActivity.class)
+        FragmentManager supportFragmentManager = Robolectric.buildActivity(MenuActivity.class)
                 .create().get().getSupportFragmentManager();
 
         List<Uri> uris = Arrays.asList(
