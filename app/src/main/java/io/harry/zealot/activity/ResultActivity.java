@@ -20,6 +20,7 @@ import io.harry.zealot.R;
 import io.harry.zealot.api.UrlShortenApi;
 import io.harry.zealot.dialog.DialogService;
 import io.harry.zealot.helper.AnimationHelper;
+import io.harry.zealot.model.Ajae;
 import io.harry.zealot.range.AjaeScoreRange;
 import io.harry.zealot.state.AjaePower;
 import io.harry.zealot.view.AjaeImageView;
@@ -72,11 +73,12 @@ public class ResultActivity extends ZealotBaseActivity implements DialogService.
         });
         valueIncreaseAnimator.start();
 
-        AjaePower ajaePower = ajaeScoreRange.getRange(ajaePercentageValue);
+        AjaePower ajaePower = ajaeScoreRange.getAjaePower(ajaePercentageValue);
+        Ajae ajae = new Ajae(ajaePower);
 
-        ajaePercentage.setAjaePower(ajaePower);
-        ajaeImage.setAjaePower(ajaePower);
-        ajaeMessage.setAjaePower(ajaePower);
+        ajaePercentage.setAjae(ajae);
+        ajaeImage.setAjae(ajae);
+        ajaeMessage.setAjae(ajae);
     }
 
     @OnClick(R.id.test_again)

@@ -30,7 +30,7 @@ public class AjaeScoreRange {
         this.ajaeScoreRangeMap.put(Range.closed(LOWER_BURNT, UPPER_BURNT), AjaePower.BURNT);
     }
 
-    public AjaePower getRange(int value) {
+    public AjaePower getAjaePower(int value) {
         return this.ajaeScoreRangeMap.get(value);
     }
 }

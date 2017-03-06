@@ -30,10 +30,12 @@ import io.harry.zealot.adapter.GagPagerAdapter;
 import io.harry.zealot.dialog.DialogService;
 import io.harry.zealot.helper.AnimationHelper;
 import io.harry.zealot.listener.FaceListener;
+import io.harry.zealot.model.Ajae;
 import io.harry.zealot.model.Gag;
 import io.harry.zealot.range.AjaeScoreRange;
 import io.harry.zealot.service.GagService;
 import io.harry.zealot.service.ServiceCallback;
+import io.harry.zealot.state.AjaePower;
 import io.harry.zealot.view.AjaePercentageView;
 import io.harry.zealot.view.TestAjaePreview;
 import io.harry.zealot.viewpager.OnSwipeListener;
@@ -153,12 +155,14 @@ public class TestAjaeActivity extends ZealotBaseActivity implements FaceListener
     public void onProgressChanged(int viewId, float progress, boolean isPrimaryProgress, boolean isSecondaryProgress) {
         final int ajaeFullPower = getResources().getInteger(R.integer.ajae_full_power);
 
-        int severityColorId = getAjaeSeverityLevel(progress);
         int ajaePercentage = (int) (progress / 10);
 
-        ajaePowerProgress.setProgressColor(ContextCompat.getColor(TestAjaeActivity.this, severityColorId));
+        AjaePower ajaePower = ajaeScoreRange.getAjaePower(ajaePercentage);
+        Ajae ajae = new Ajae(ajaePower);
+
+        ajaePowerProgress.setProgressColor(ContextCompat.getColor(TestAjaeActivity.this, ajae.getColor()));
         ajaePowerPercentage.setText(getString(R.string.x_percentage, ajaePercentage));
-        ajaePowerPercentage.setAjaePower(ajaeScoreRange.getRange(ajaePercentage));
+        ajaePowerPercentage.setAjae(ajae);
 
         if (progress == ajaeFullPower) {
             launchResultActivity(ajaeFullPower);
@@ -182,19 +186,6 @@ public class TestAjaeActivity extends ZealotBaseActivity implements FaceListener
         }
 
         gagService.getGagImageUris(imageNames, serviceCallback);
-    }
-
-    private int getAjaeSeverityLevel(float ajaePower) {
-        //todo: change with range
-        if (ajaePower >= 500 && ajaePower < 700) {
-            return R.color.orange;
-        } else if (ajaePower >= 700 && ajaePower < 900) {
-            return R.color.hot_pink;
-        } else if (ajaePower >= 900 && ajaePower <= 1000) {
-            return R.color.red;
-        } else {
-            return R.color.light_green;
-        }
     }
 
     @Override

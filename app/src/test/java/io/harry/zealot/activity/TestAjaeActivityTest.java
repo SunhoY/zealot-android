@@ -71,6 +71,7 @@ import static org.robolectric.Shadows.shadowOf;
 @Config(constants = BuildConfig.class)
 public class TestAjaeActivityTest {
     private static final int GAG_PAGE_COUNT = 4;
+    private static final float PROGRESS_NO_MATTER = 123.f;
 
     private TestAjaeActivity subject;
     private Animation mockScaleXYAnimation;
@@ -127,7 +128,7 @@ public class TestAjaeActivityTest {
         mockScaleXYAnimation = mock(Animation.class);
 
         //TODO: has to be realistic
-        when(mockAjaeScoreRange.getRange(anyInt())).thenReturn(AjaePower.BURNT);
+        when(mockAjaeScoreRange.getAjaePower(anyInt())).thenReturn(AjaePower.BURNT);
         when(mockGagPagerAdapterWrapper.getGagPagerAdapter(any(FragmentManager.class), anyListOf(Uri.class)))
             .thenReturn(mockGagPagerAdapter);
         when(mockGagPagerAdapter.getCount()).thenReturn(GAG_PAGE_COUNT);
@@ -274,28 +275,23 @@ public class TestAjaeActivityTest {
     }
 
     @Test
-    public void onAjaePowerChanged_setProgressColorAsOrange_whenAjaeLevelExceedsCaution() throws Exception {
+    public void onAjaePowerChanged_callsAjaeScoreRangeWithAjaePercentage_toGetAjaePower() throws Exception {
         progress.setProgress(500.f);
 
-        assertThat(progress.getProgressColor()).isEqualTo(ContextCompat.getColor(application, R.color.orange));
+        verify(mockAjaeScoreRange).getAjaePower(50);
     }
 
     @Test
-    public void onAjaePowerChanged_setProgressColorAsHotPink_whenAjaeLevelExceedsDanger() throws Exception {
-        progress.setProgress(700.f);
+    public void onAjaePowerChanged_setProgressColor_accordingToReturnedAjaePowerByScoreRange() throws Exception {
+        when(mockAjaeScoreRange.getAjaePower(anyInt())).thenReturn(AjaePower.BURNT);
 
-        assertThat(progress.getProgressColor()).isEqualTo(ContextCompat.getColor(application, R.color.hot_pink));
+        progress.setProgress(PROGRESS_NO_MATTER);
+
+        assertThat(progress.getProgressColor()).isEqualTo(ContextCompat.getColor(application, R.color.burnt_ajae));
     }
 
     @Test
-    public void onAjaePowerChanged_setProgressColorAsRed_whenAjaeLevelReachesRealAjae() throws Exception {
-        progress.setProgress(900.f);
-
-        assertThat(progress.getProgressColor()).isEqualTo(ContextCompat.getColor(application, R.color.red));
-    }
-
-    @Test
-    public void onAjaePowerChanged_launchesResultActivity_whenAjaePowerFullyCharged() throws Exception {
+    public void onAjaePowerChanged_doesNotlaunchResultActivity_whenAjaePowerFullyCharged() throws Exception {
         progress.setProgress(1000.f);
 
         Intent actual = shadowOf(subject).getNextStartedActivity();

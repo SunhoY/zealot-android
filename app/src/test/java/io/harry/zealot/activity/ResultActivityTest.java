@@ -36,6 +36,7 @@ import io.harry.zealot.api.UrlShortenApi;
 import io.harry.zealot.dialog.DialogService;
 import io.harry.zealot.dialog.DialogService.InputDialogListener;
 import io.harry.zealot.helper.AnimationHelper;
+import io.harry.zealot.model.Ajae;
 import io.harry.zealot.range.AjaeScoreRange;
 import io.harry.zealot.shadow.view.ShadowAjaeImageView;
 import io.harry.zealot.shadow.view.ShadowAjaeMessageView;
@@ -119,7 +120,7 @@ public class ResultActivityTest {
         Intent intent = new Intent();
         intent.putExtra("ajaeScore", score);
 
-        when(mockAjaeScoreRange.getRange(anyInt())).thenReturn(ajaePower);
+        when(mockAjaeScoreRange.getAjaePower(anyInt())).thenReturn(ajaePower);
         when(mockDialogService.getInputDialog(any(Context.class), any(InputDialogListener.class)))
                 .thenReturn(mockInputDialog);
         when(mockAnimationHelper.getValueIncreaseAnimator(anyInt(), anyInt())).thenReturn(mockValueIncreaseAnimation);
@@ -179,15 +180,15 @@ public class ResultActivityTest {
     public void onCreate_setsAjaePowerOnCustomViews() throws Exception {
         setUp(SCORE_NO_MATTER, NONE);
 
-        assertThat(shadowAjaeMessageView.getAjaePower()).isEqualTo(NONE);
-        assertThat(shadowAjaePercentageView.getAjaePower()).isEqualTo(NONE);
-        assertThat(shadowAjaeImageView.getAjaePower()).isEqualTo(NONE);
+        assertThat(shadowAjaeMessageView.getAjae()).isEqualTo(new Ajae(NONE));
+        assertThat(shadowAjaePercentageView.getAjae()).isEqualTo(new Ajae(NONE));
+        assertThat(shadowAjaeImageView.getAjae()).isEqualTo(new Ajae(NONE));
 
         setUp(SCORE_NO_MATTER, MEDIUM);
 
-        assertThat(shadowAjaeMessageView.getAjaePower()).isEqualTo(MEDIUM);
-        assertThat(shadowAjaePercentageView.getAjaePower()).isEqualTo(MEDIUM);
-        assertThat(shadowAjaeImageView.getAjaePower()).isEqualTo(MEDIUM);
+        assertThat(shadowAjaeMessageView.getAjae()).isEqualTo(new Ajae(MEDIUM));
+        assertThat(shadowAjaePercentageView.getAjae()).isEqualTo(new Ajae(MEDIUM));
+        assertThat(shadowAjaeImageView.getAjae()).isEqualTo(new Ajae(MEDIUM));
     }
 
     @Test
