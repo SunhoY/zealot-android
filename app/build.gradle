@@ -24,6 +24,12 @@ android {
         jumboMode true
         javaMaxHeapSize "4g"
     }
+
+    applicationVariants.all { variant ->
+        def productFlavor = variant.productFlavors[0] != null ? "${variant.productFlavors[0].name.capitalize()}" : ""
+        def buildType = "${variant.buildType.name.capitalize()}"
+        tasks["compile${productFlavor}${buildType}UnitTestSources"].dependsOn(tasks["merge${productFlavor}${buildType}Assets"])
+    }
 }
 
 def supportLibraryVersion = "25.1.1"
