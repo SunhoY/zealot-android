@@ -25,7 +25,7 @@
     <string name="next">다음</string>
     <string name="previous">이전</string>
     <string name="result">결과</string>
-    <string name="server_url">https://sunhoY.github.io/zealot-react</string>
+    <string name="server_url">https://sunhoY.github.io/zealot-react/</string>
     <string name="admin_pass_code">435261</string>
     <string name="confirm">확인</string>
     <string name="admin_introduction">관리자 전용 페이지입니다.\n관리자가 아니면 사용할 수 없습니다\n인증번호를 입력해주세요</string>
