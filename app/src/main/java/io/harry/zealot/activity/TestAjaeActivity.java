@@ -126,7 +126,7 @@ public class TestAjaeActivity extends ZealotBaseActivity implements FaceListener
                         gagPagerAdapter = gagPagerAdapterWrapper.getGagPagerAdapter(
                                 getSupportFragmentManager(), result);
                         gagPager.setAdapter(gagPagerAdapter);
-                        progressDialog.hide();
+                        progressDialog.dismiss();
                     }
                 });
             }

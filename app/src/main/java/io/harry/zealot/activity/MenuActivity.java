@@ -140,7 +140,7 @@ public class MenuActivity extends ZealotBaseActivity implements Animator.Animato
         gagService.uploadGag(scaledBitmap, new ServiceCallback<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                progressDialog.hide();
+                progressDialog.dismiss();
                 Toast.makeText(MenuActivity.this, R.string.upload_complete, Toast.LENGTH_LONG).show();
             }
         });

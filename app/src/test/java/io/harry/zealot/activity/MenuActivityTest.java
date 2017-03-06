@@ -279,7 +279,7 @@ public class MenuActivityTest {
     }
 
     @Test
-    public void onSuccessUpload_hidesProgressDialog() throws Exception {
+    public void onSuccessUpload_dismissesProgressDialog() throws Exception {
         Bitmap mockBitmap = mock(Bitmap.class);
         when(bitmapHelper.scaleBitmap(eq(mockBitmap), anyInt(), anyInt())).thenReturn(mockBitmap);
 
@@ -289,7 +289,7 @@ public class MenuActivityTest {
 
         serviceCallbackCaptor.getValue().onSuccess(null);
 
-        verify(mockProgressDialog).hide();
+        verify(mockProgressDialog).dismiss();
     }
 
     @Test

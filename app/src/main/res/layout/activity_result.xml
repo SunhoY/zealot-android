@@ -62,13 +62,15 @@
         android:id="@+id/ajae_message"
         fontPath="fonts/BMDOHYEON.ttf"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="120dp"
         tools:text="빼박캔트\n진성아재"
         android:layout_below="@id/ajae_image"
         android:layout_marginTop="20dp"
         android:textSize="48sp"
         android:textColor="#ffffff"
         android:layout_centerHorizontal="true"
+        android:visibility="invisible"
+        android:maxLines="0"
         />
 
     <Button

@@ -219,7 +219,7 @@ public class TestAjaeActivityTest {
     }
 
     @Test
-    public void afterGettingListOfUri_hidesProgressDialog() throws Exception {
+    public void afterGettingListOfUri_dismissesProgressDialog() throws Exception {
         verify(mockGagService).getGags(anyInt(), anyBoolean(), gagListServiceCallbackCaptor.capture());
 
         gagListServiceCallbackCaptor.getValue().onSuccess(new ArrayList<Gag>());
@@ -232,7 +232,7 @@ public class TestAjaeActivityTest {
 
         uriListServiceCallbackCaptor.getValue().onSuccess(new ArrayList<Uri>());
 
-        verify(mockProgressDialog).hide();
+        verify(mockProgressDialog).dismiss();
     }
 
     @Test

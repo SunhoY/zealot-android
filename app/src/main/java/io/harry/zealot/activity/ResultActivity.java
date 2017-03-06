@@ -4,8 +4,10 @@ import android.animation.ValueAnimator;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.view.View;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -53,7 +55,6 @@ public class ResultActivity extends ZealotBaseActivity implements DialogService.
     @Inject
     AnimationHelper animationHelper;
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +70,10 @@ public class ResultActivity extends ZealotBaseActivity implements DialogService.
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 ajaePercentage.setText(getResources().getString(R.string.x_percentage, (int) animation.getAnimatedValue()));
+
+                if((int) animation.getAnimatedValue() == ajaePercentageValue) {
+                    increaseMaxLines(1000);
+                }
             }
         });
         valueIncreaseAnimator.start();
@@ -108,7 +113,7 @@ public class ResultActivity extends ZealotBaseActivity implements DialogService.
     @Override
     public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
         if(progressDialog != null) {
-            progressDialog.hide();
+            progressDialog.dismiss();
         }
 
         String shortenedURL = response.body().get("id").toString();
@@ -124,4 +129,16 @@ public class ResultActivity extends ZealotBaseActivity implements DialogService.
 
     @Override
     public void onFailure(Call<Map<String, Object>> call, Throwable t) {}
+
+    private void increaseMaxLines(int interval) {
+        ajaeMessage.setVisibility(View.VISIBLE);
+        ajaeMessage.setMaxLines(1);
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ajaeMessage.setMaxLines(2);
+            }
+        }, interval);
+    }
 }

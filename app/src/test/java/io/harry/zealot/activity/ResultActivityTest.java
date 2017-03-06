@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
+import android.view.View;
 import android.widget.Button;
 
 import com.google.common.collect.ImmutableMap;
@@ -24,6 +25,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -177,6 +179,47 @@ public class ResultActivityTest {
     }
 
     @Test
+    public void valueUpdateListener_doesNotShowsAjaeMessage_whenAjaePowerIsNotReached() throws Exception {
+        setUp(70, POWER_NO_MATTER);
+
+        verify(mockValueIncreaseAnimation).addUpdateListener(animatorUpdateListenerCaptor.capture());
+
+        AnimatorUpdateListener animatorUpdateListener = animatorUpdateListenerCaptor.getValue();
+
+        ValueAnimator mockAnimator = mock(ValueAnimator.class);
+        when(mockAnimator.getAnimatedValue()).thenReturn(69);
+
+        animatorUpdateListener.onAnimationUpdate(mockAnimator);
+
+        assertThat(ajaeMessage.getMaxLines()).isEqualTo(0);
+        assertThat(ajaeMessage.getVisibility()).isEqualTo(View.INVISIBLE);
+    }
+
+    @Test
+    public void valueUpdateListener_showsAjaeMessageLineByLine_whenAjaePowerIsReached() throws Exception {
+        setUp(70, POWER_NO_MATTER);
+
+        verify(mockValueIncreaseAnimation).addUpdateListener(animatorUpdateListenerCaptor.capture());
+
+        AnimatorUpdateListener animatorUpdateListener = animatorUpdateListenerCaptor.getValue();
+
+        ValueAnimator mockAnimator = mock(ValueAnimator.class);
+        when(mockAnimator.getAnimatedValue()).thenReturn(70);
+
+        Robolectric.getForegroundThreadScheduler().pause();
+
+        animatorUpdateListener.onAnimationUpdate(mockAnimator);
+
+        assertThat(ajaeMessage.getMaxLines()).isEqualTo(1);
+        assertThat(ajaeMessage.getVisibility()).isEqualTo(View.VISIBLE);
+
+        Robolectric.getForegroundThreadScheduler().advanceBy(1000, TimeUnit.MILLISECONDS);
+
+        assertThat(ajaeMessage.getMaxLines()).isEqualTo(2);
+        assertThat(ajaeMessage.getVisibility()).isEqualTo(View.VISIBLE);
+    }
+
+    @Test
     public void onCreate_setsAjaePowerOnCustomViews() throws Exception {
         setUp(SCORE_NO_MATTER, NONE);
 
@@ -280,7 +323,7 @@ public class ResultActivityTest {
     }
 
     @Test
-    public void onUrlShortenerResponse_hidesProgressDialog_whenDialogIsNotNull() throws Exception {
+    public void onUrlShortenerResponse_dismissesProgressDialog_whenDialogIsNotNull() throws Exception {
         setUp(SCORE_NO_MATTER, POWER_NO_MATTER);
 
         Map<String, Object> body = ImmutableMap.<String, Object>of("id", "does not matter");
@@ -288,12 +331,12 @@ public class ResultActivityTest {
 
         subject.onResponse(mockMapCall, response);
 
-        verify(mockProgressDialog, never()).hide();
+        verify(mockProgressDialog, never()).dismiss();
 
         setUpNickNameConfirmed(mockMapCall, mockProgressDialog, NICK_NAME_NO_MATTER);
 
         subject.onResponse(mockMapCall, response);
 
-        verify(mockProgressDialog).hide();
+        verify(mockProgressDialog).dismiss();
     }
 }
