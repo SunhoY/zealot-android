@@ -91,7 +91,7 @@
                 android:layout_height="24dp"
                 android:text="0 %"
                 android:textSize="20sp"
-                android:textColor="@color/hot_pink"
+                android:textColor="@android:color/white"
                 android:layout_alignParentEnd="true"
                 android:gravity="end"
                 />
