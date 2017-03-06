@@ -291,17 +291,6 @@ public class TestAjaeActivityTest {
     }
 
     @Test
-    public void onAjaePowerChanged_doesNotlaunchResultActivity_whenAjaePowerFullyCharged() throws Exception {
-        progress.setProgress(1000.f);
-
-        Intent actual = shadowOf(subject).getNextStartedActivity();
-
-        IntentAssert intentAssert = new IntentAssert(actual);
-        intentAssert.hasComponent(application, ResultActivity.class);
-        intentAssert.hasExtra("ajaeScore", 100);
-    }
-
-    @Test
     public void onSwipeAttemptedOnLastPage_launchesResultActivity() throws Exception {
         progress.setProgress(699.f);
 

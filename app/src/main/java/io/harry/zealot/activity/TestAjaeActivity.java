@@ -153,8 +153,6 @@ public class TestAjaeActivity extends ZealotBaseActivity implements FaceListener
 
     @Override
     public void onProgressChanged(int viewId, float progress, boolean isPrimaryProgress, boolean isSecondaryProgress) {
-        final int ajaeFullPower = getResources().getInteger(R.integer.ajae_full_power);
-
         int ajaePercentage = (int) (progress / 10);
 
         AjaePower ajaePower = ajaeScoreRange.getAjaePower(ajaePercentage);
@@ -163,10 +161,6 @@ public class TestAjaeActivity extends ZealotBaseActivity implements FaceListener
         ajaePowerProgress.setProgressColor(ContextCompat.getColor(TestAjaeActivity.this, ajae.getColor()));
         ajaePowerPercentage.setText(getString(R.string.x_percentage, ajaePercentage));
         ajaePowerPercentage.setAjae(ajae);
-
-        if (progress == ajaeFullPower) {
-            launchResultActivity(ajaeFullPower);
-        }
     }
 
     private void launchResultActivity(float ajaePower) {
