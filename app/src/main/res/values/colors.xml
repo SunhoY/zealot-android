@@ -15,4 +15,5 @@
     <color name="medium_ajae">#f5a623</color>
     <color name="rare_ajae">#3ff4a2</color>
     <color name="none_ajae">#32dee9</color>
+    <color name="disabled_background">#92000000</color>
 </resources>

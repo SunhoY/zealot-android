@@ -14,13 +14,18 @@ public class GagPagerAdapter extends FragmentPagerAdapter {
 
     private ArrayList<GagFragment> gagFragments;
 
-    public GagPagerAdapter(FragmentManager fragmentManager, List<Uri> gagUris) {
+    public <T> GagPagerAdapter(FragmentManager fragmentManager, List<T> gags) {
         super(fragmentManager);
 
         gagFragments = new ArrayList<>();
-
-        for(Uri gagUri : gagUris) {
-            GagFragment gagFragment = GagFragment.newInstance(gagUri);
+        //TODO gagPagerAdapter test needed
+        for (T gag : gags) {
+            GagFragment gagFragment = null;
+            if (gag instanceof Uri) {
+                gagFragment = GagFragment.newInstance((Uri) gag);
+            } else if (gag instanceof Integer) {
+                gagFragment = GagFragment.newInstance((Integer) gag);
+            }
 
             gagFragments.add(gagFragment);
         }

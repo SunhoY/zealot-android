@@ -6,6 +6,7 @@ import dagger.Component;
 import io.harry.zealot.activity.MenuActivity;
 import io.harry.zealot.activity.ResultActivity;
 import io.harry.zealot.activity.TestAjaeActivity;
+import io.harry.zealot.activity.TutorialActivity;
 import io.harry.zealot.activity.VerificationActivity;
 import io.harry.zealot.fragment.GagFragment;
 import io.harry.zealot.module.AjaeScoreModule;
@@ -40,4 +41,5 @@ public interface ZealotComponent {
     void inject(MenuActivity menuActivity);
     void inject(ResultActivity resultActivity);
     void inject(VerificationActivity verificationActivity);
+    void inject(TutorialActivity tutorialActivity);
 }

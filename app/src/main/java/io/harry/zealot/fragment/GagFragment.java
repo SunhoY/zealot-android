@@ -19,7 +19,8 @@ import io.harry.zealot.R;
 import io.harry.zealot.ZealotApplication;
 
 public class GagFragment extends Fragment {
-    public static final String GAG_IMAGE_URI = "gagImageUri";
+    private static final String GAG_IMAGE_URI = "gagImageUri";
+    private static final String GAG_IMAGE_RESOURCE_ID = "gagResourceId";
     @Inject
     Picasso picasso;
 
@@ -27,10 +28,20 @@ public class GagFragment extends Fragment {
     ImageView gagImage;
 
     private Uri gagImageUri;
+    private int gagImageResourceId;
 
     public static GagFragment newInstance(Uri uri) {
         Bundle args = new Bundle();
         args.putParcelable(GAG_IMAGE_URI, uri);
+
+        GagFragment fragment = new GagFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static GagFragment newInstance(int gagResourceId) {
+        Bundle args = new Bundle();
+        args.putInt(GAG_IMAGE_RESOURCE_ID, gagResourceId);
 
         GagFragment fragment = new GagFragment();
         fragment.setArguments(args);
@@ -43,7 +54,11 @@ public class GagFragment extends Fragment {
 
         ((ZealotApplication) getActivity().getApplication()).getZealotComponent().inject(this);
 
-        gagImageUri = (Uri) getArguments().get(GAG_IMAGE_URI);
+        if(getArguments().containsKey(GAG_IMAGE_URI)) {
+            gagImageUri = (Uri) getArguments().get(GAG_IMAGE_URI);
+        } else if(getArguments().containsKey(GAG_IMAGE_RESOURCE_ID)) {
+            gagImageResourceId = (int) getArguments().get(GAG_IMAGE_RESOURCE_ID);
+        }
     }
 
     @Nullable
@@ -60,6 +75,8 @@ public class GagFragment extends Fragment {
     public void onResume() {
         if(gagImageUri != null) {
             picasso.load(gagImageUri).into(gagImage);
+        } else if(gagImageResourceId != 0) {
+            picasso.load(gagImageResourceId).into(gagImage);
         }
 
         super.onResume();

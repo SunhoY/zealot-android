@@ -1,0 +1,214 @@
+package io.harry.zealot.activity;
+
+import android.content.Context;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
+import com.google.android.gms.vision.face.Face;
+import com.google.android.gms.vision.face.FaceDetector;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
+
+import java.util.Arrays;
+
+import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import io.harry.zealot.BuildConfig;
+import io.harry.zealot.R;
+import io.harry.zealot.TestZealotApplication;
+import io.harry.zealot.adapter.GagPagerAdapter;
+import io.harry.zealot.listener.FaceListener;
+import io.harry.zealot.vision.ZealotFaceFactory;
+import io.harry.zealot.vision.wrapper.ZealotFaceDetectorWrapper;
+import io.harry.zealot.vision.wrapper.ZealotFaceFactoryWrapper;
+import io.harry.zealot.vision.wrapper.ZealotMultiProcessorWrapper;
+import io.harry.zealot.wrapper.GagPagerAdapterWrapper;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.robolectric.RuntimeEnvironment.application;
+
+@RunWith(RobolectricTestRunner.class)
+@Config(constants = BuildConfig.class)
+public class TutorialActivityTest {
+
+    public static final int PAGER_ADAPTER_SIZE = 3;
+    private TutorialActivity subject;
+
+    private FaceDetector faceDetector;
+
+    @BindView(R.id.tutorial_pager)
+    ViewPager tutorialPager;
+    @BindView(R.id.camera_tutorial_next)
+    Button cameraNext;
+    @BindView(R.id.smile_tutorial_next)
+    Button smileNext;
+    @BindView(R.id.pager_tutorial_next)
+    Button pagerNext;
+    @BindView(R.id.navigation_tutorial_next)
+    Button navigationNext;
+    @BindView(R.id.camera_tutorial)
+    LinearLayout cameraTutorial;
+    @BindView(R.id.smile_tutorial)
+    LinearLayout smileTutorial;
+    @BindView(R.id.pager_tutorial)
+    LinearLayout pagerTutorial;
+    @BindView(R.id.navigation_tutorial)
+    LinearLayout navigationTutorial;
+    @BindView(R.id.next_gag)
+    TextView nextGag;
+    @BindView(R.id.previous_gag)
+    TextView previousGag;
+    @BindView(R.id.progress)
+    RoundCornerProgressBar ajaePowerProgress;
+
+    @Inject
+    ZealotFaceDetectorWrapper mockFaceDetectorWrapper;
+    @Inject
+    GagPagerAdapterWrapper mockGagPagerAdapterWrapper;
+    @Inject
+    ZealotFaceFactoryWrapper mockFaceFactoryWrapper;
+    @Inject
+    ZealotMultiProcessorWrapper mockMultiProcessorWrapper;
+
+    @Mock
+    private GagPagerAdapter mockGagPagerAdapter;
+    @Mock
+    private ZealotFaceFactory mockFaceFactory;
+
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+
+        ((TestZealotApplication) application).getZealotComponent().inject(this);
+        faceDetector = new FaceDetector.Builder(application).build();
+
+        when(mockFaceDetectorWrapper.getFaceDetector(any(Context.class))).thenReturn(faceDetector);
+        when(mockGagPagerAdapterWrapper.getGagPagerAdapter(any(FragmentManager.class), anyList())).thenReturn(mockGagPagerAdapter);
+        when(mockFaceFactoryWrapper.getZealotFaceFactory(any(FaceListener.class))).thenReturn(mockFaceFactory);
+        when(mockGagPagerAdapter.getCount()).thenReturn(PAGER_ADAPTER_SIZE);
+
+        subject = Robolectric.setupActivity(TutorialActivity.class);
+
+        ButterKnife.bind(this, subject);
+    }
+
+    @Test
+    public void onCreate_getsPagerAdapterWith3TutorialDrawables() throws Exception {
+        verify(mockGagPagerAdapterWrapper).getGagPagerAdapter(subject.getSupportFragmentManager(),
+                Arrays.asList(R.drawable.az_tutorial_1, R.drawable.az_tutorial_2, R.drawable.az_tutorial_3));
+    }
+
+    @Test
+    public void onCreate_setsPagerAdapterOnTutorialPager() throws Exception {
+        assertThat(tutorialPager.getAdapter()).isEqualTo(mockGagPagerAdapter);
+    }
+
+    @Test
+    public void onCreate_getsFaceFactory_fromFaceFactoryWrapper() throws Exception {
+        verify(mockFaceFactoryWrapper).getZealotFaceFactory(subject);
+    }
+
+    @Test
+    public void onCreate_getsFaceDetector_fromFaceDetectorWrapper() throws Exception {
+        verify(mockFaceDetectorWrapper).getFaceDetector(subject);
+    }
+
+    @Test
+    public void onCreate_getsFaceProcessor_FromMultiProcessorWrapper() throws Exception {
+        verify(mockMultiProcessorWrapper).getMultiProcessor(mockFaceFactory);
+    }
+
+    @Test
+    public void clickOnCameraNext_hidesCameraTutorial_andShowsSmileTutorial() throws Exception {
+        cameraNext.performClick();
+
+        assertThat(cameraTutorial.getVisibility()).isEqualTo(View.INVISIBLE);
+        assertThat(smileTutorial.getVisibility()).isEqualTo(View.VISIBLE);
+    }
+
+    @Test
+    public void clickOnSmileNext_hidesSmileTutorial_andShowsPagerTutorial() throws Exception {
+        smileNext.performClick();
+
+        assertThat(smileTutorial.getVisibility()).isEqualTo(View.INVISIBLE);
+        assertThat(pagerTutorial.getVisibility()).isEqualTo(View.VISIBLE);
+    }
+
+    @Test
+    public void clickOnPagerNext_hidesPagerTutorial_andShowsNavigationTutorial() throws Exception {
+        pagerNext.performClick();
+
+        assertThat(pagerTutorial.getVisibility()).isEqualTo(View.INVISIBLE);
+        assertThat(navigationTutorial.getVisibility()).isEqualTo(View.VISIBLE);
+    }
+
+    @Test
+    public void clickOnNavigationNext_finishesActivity() throws Exception {
+        navigationNext.performClick();
+
+        assertThat(subject.isFinishing()).isTrue();
+    }
+
+    @Test
+    public void clickOnNextGag_showsNextPageOnViewPager() throws Exception {
+        assertThat(tutorialPager.getCurrentItem()).isEqualTo(0);
+
+        nextGag.performClick();
+
+        assertThat(tutorialPager.getCurrentItem()).isEqualTo(1);
+    }
+
+    @Test
+    public void clickOnPreviousGag_showsPreviousPageOnViewPager() throws Exception {
+        tutorialPager.setCurrentItem(2);
+
+        previousGag.performClick();
+
+        assertThat(tutorialPager.getCurrentItem()).isEqualTo(1);
+    }
+
+    @Test
+    public void onCameraPhase_progressBarDoesNotIncrease() throws Exception {
+        Face face = mock(Face.class);
+        when(face.getIsSmilingProbability()).thenReturn(.31f);
+
+        subject.onFaceDetect(face);
+
+        Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
+
+        assertThat(ajaePowerProgress.getProgress()).isEqualTo(0.f);
+    }
+
+    @Test
+    public void onSmilePhase_progressBarIncrease_whenFaceIsSmiley() throws Exception {
+        cameraNext.performClick();
+
+        Face face = mock(Face.class);
+        when(face.getIsSmilingProbability()).thenReturn(.31f);
+
+        subject.onFaceDetect(face);
+
+        Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
+
+        assertThat(ajaePowerProgress.getProgress()).isEqualTo(10.f);
+    }
+}
