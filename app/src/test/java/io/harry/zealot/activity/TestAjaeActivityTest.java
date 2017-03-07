@@ -330,11 +330,11 @@ public class TestAjaeActivityTest {
     public void onPageSelected_callsSetCurrentIndexOfNavigationBar() throws Exception {
         subject.onPageSelected(0);
 
-        assertThat(shadowNavigationBar.getIndex()).isEqualTo(0);
+        assertThat(navigationBar.getCurrentIndex()).isEqualTo(0);
 
         subject.onPageSelected(3);
 
-        assertThat(shadowNavigationBar.getIndex()).isEqualTo(3);
+        assertThat(navigationBar.getCurrentIndex()).isEqualTo(3);
     }
 
     @Test

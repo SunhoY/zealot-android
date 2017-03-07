@@ -10,16 +10,9 @@ import lombok.Getter;
 @Implements(NavigationBar.class)
 public class ShadowNavigationBar extends ShadowRelativeLayout {
     @Getter
-    private int index;
-    @Getter
     private int size;
     @Getter
     private NavigationBar.NavigateListener listener;
-
-    @Implementation
-    public void setCurrentIndex(int index) {
-        this.index = index;
-    }
 
     @Implementation
     public void setSize(int size) {

@@ -37,10 +37,10 @@ public class NavigationBar extends RelativeLayout {
             @Override
             public void onClick(View view) {
                 if(index > 0) {
-                    if(navigateListener != null) {
-                        navigateListener.onPrevious();
-                    }
                     setCurrentIndex(--index);
+                }
+                if(navigateListener != null) {
+                    navigateListener.onPrevious();
                 }
             }
         };
@@ -49,16 +49,20 @@ public class NavigationBar extends RelativeLayout {
             @Override
             public void onClick(View view) {
                 if(index < size - 1) {
-                    if(navigateListener != null) {
-                        navigateListener.onNext();
-                    }
                     setCurrentIndex(++index);
+                }
+                if(navigateListener != null) {
+                    navigateListener.onNext();
                 }
             }
         };
 
         previous.setOnClickListener(previousListener);
         next.setOnClickListener(nextListener);
+    }
+
+    public int getCurrentIndex() {
+        return index;
     }
 
     public void setNavigateListener(final NavigateListener navigateListener) {
@@ -70,6 +74,9 @@ public class NavigationBar extends RelativeLayout {
     }
 
     public void setCurrentIndex(int index) {
+        if(index < 0 || index >= size)
+            return;
+
         this.index = index;
 
         if(index == 0)  {

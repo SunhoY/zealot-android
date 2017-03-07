@@ -262,8 +262,6 @@ public class TutorialActivityTest {
     public void onPageSelected_setsIndexOnNavigationBar() throws Exception {
         subject.onPageSelected(2);
 
-        ShadowNavigationBar shadowNavigationBar = (ShadowNavigationBar) shadowOf(navigationBar);
-
-        assertThat(shadowNavigationBar.getIndex()).isEqualTo(2);
+        assertThat(navigationBar.getCurrentIndex()).isEqualTo(2);
     }
 }

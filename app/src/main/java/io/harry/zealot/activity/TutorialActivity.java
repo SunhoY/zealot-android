@@ -198,7 +198,9 @@ public class TutorialActivity extends ZealotBaseActivity
 
     @Override
     public void onPageSelected(int position) {
-        navigationBar.setCurrentIndex(position);
+        if(navigationBar.getCurrentIndex() != position){
+            navigationBar.setCurrentIndex(position);
+        }
     }
 
     @Override

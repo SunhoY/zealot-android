@@ -74,6 +74,17 @@ public class NavigationBarTest {
     }
 
     @Test
+    public void setCurrentIndex_doesNothing_whenIndexIsOutOfBound() throws Exception {
+        subject.setCurrentIndex(-1);
+
+        assertThat(subject.getCurrentIndex()).isEqualTo(0);
+
+        subject.setCurrentIndex(NAVIGATE_SIZE);
+
+        assertThat(subject.getCurrentIndex()).isEqualTo(0);
+    }
+
+    @Test
     public void showsOrdinalNumber_onCenterTopText_accordingToPageNumber() throws Exception {
         subject.setCurrentIndex(0);
 
@@ -100,7 +111,7 @@ public class NavigationBarTest {
     }
 
     @Test
-    public void clickOnNext_runsListener_accordingToSize_whenListenerIsSet() throws Exception {
+    public void clickOnNext_runsListener_whenListenerIsSet() throws Exception {
         subject.setNavigateListener(mockNavigateListener);
         subject.setCurrentIndex(NAVIGATE_SIZE - 2);
 
@@ -110,7 +121,7 @@ public class NavigationBarTest {
 
         next.performClick();
 
-        verify(mockNavigateListener, times(1)).onNext();
+        verify(mockNavigateListener, times(2)).onNext();
     }
 
     @Test
@@ -129,7 +140,7 @@ public class NavigationBarTest {
     }
 
     @Test
-    public void clickOnPrevious_runsListener_accordingToSize_whenListenerIsSet() throws Exception {
+    public void clickOnPrevious_runsListener_whenListenerIsSet() throws Exception {
         subject.setNavigateListener(mockNavigateListener);
         subject.setCurrentIndex(1);
 
@@ -139,6 +150,6 @@ public class NavigationBarTest {
 
         previous.performClick();
 
-        verify(mockNavigateListener, times(1)).onPrevious();
+        verify(mockNavigateListener, times(2)).onPrevious();
     }
 }
