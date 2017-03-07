@@ -46,7 +46,9 @@ import io.harry.zealot.model.Gag;
 import io.harry.zealot.range.AjaeScoreRange;
 import io.harry.zealot.service.GagService;
 import io.harry.zealot.service.ServiceCallback;
+import io.harry.zealot.shadow.ShadowNavigationBar;
 import io.harry.zealot.state.AjaePower;
+import io.harry.zealot.view.NavigationBar;
 import io.harry.zealot.view.TestAjaePreview;
 import io.harry.zealot.viewpager.ZealotViewPager;
 import io.harry.zealot.vision.wrapper.ZealotCameraSourceWrapper;
@@ -68,7 +70,7 @@ import static org.robolectric.RuntimeEnvironment.application;
 import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class)
+@Config(constants = BuildConfig.class, shadows = {ShadowNavigationBar.class})
 public class TestAjaeActivityTest {
     private static final int GAG_PAGE_COUNT = 4;
     private static final float PROGRESS_NO_MATTER = 123.f;
@@ -85,12 +87,8 @@ public class TestAjaeActivityTest {
     RoundCornerProgressBar progress;
     @BindView(R.id.ajae_power_percentage)
     TextView ajaePowerPercentage;
-    @BindView(R.id.previous_gag)
-    TextView previousGag;
-    @BindView(R.id.next_gag)
-    TextView nextGag;
-    @BindView(R.id.current_gag)
-    TextView currentGag;
+    @BindView(R.id.navigation_bar)
+    NavigationBar navigationBar;
 
     @Inject
     GagPagerAdapterWrapper mockGagPagerAdapterWrapper;
@@ -118,6 +116,7 @@ public class TestAjaeActivityTest {
     ArgumentCaptor<ServiceCallback<List<Gag>>> gagListServiceCallbackCaptor;
     @Captor
     ArgumentCaptor<ServiceCallback<List<Uri>>> uriListServiceCallbackCaptor;
+    private ShadowNavigationBar shadowNavigationBar;
 
     @Before
     public void setUp() throws Exception {
@@ -141,6 +140,8 @@ public class TestAjaeActivityTest {
         subject.gagPager.setAdapter(mockGagPagerAdapter);
 
         ButterKnife.bind(this, subject);
+
+        shadowNavigationBar = (ShadowNavigationBar) shadowOf(navigationBar);
     }
 
     @Test
@@ -246,6 +247,16 @@ public class TestAjaeActivityTest {
     }
 
     @Test
+    public void onCreate_setsSize_10_onNavigationBar() throws Exception {
+        assertThat(shadowNavigationBar.getSize()).isEqualTo(10);
+    }
+
+    @Test
+    public void onCreate_setsNavigateListenerItSelf() throws Exception {
+        assertThat(shadowNavigationBar.getListener()).isEqualTo(subject);
+    }
+
+    @Test
     public void onFaceDetect_fillsProgressBar_whenFaceIsSmiling() throws Exception {
         faceDetectsWithSmileyProbability(.40f);
 
@@ -307,86 +318,59 @@ public class TestAjaeActivityTest {
     }
 
     @Test
-    public void showsToHome_onLeftTopText_whenPageIsFirstPage() throws Exception {
+    public void onPageSelected_callsSetCurrentIndexOfNavigationBar() throws Exception {
         subject.onPageSelected(0);
 
-        assertThat(previousGag.getText()).isEqualTo("집으로");
-    }
-
-    @Test
-    public void showsPrevious_onLeftTopText_whenPageIsNotFirstPage() throws Exception {
-        subject.onPageSelected(1);
-
-        assertThat(previousGag.getText()).isEqualTo("이전");
-
-        subject.onPageSelected(2);
-
-        assertThat(previousGag.getText()).isEqualTo("이전");
-    }
-
-    @Test
-    public void showsToNext_onRightTopText_whenPageIsNotLastPage() throws Exception {
-        subject.onPageSelected(GAG_PAGE_COUNT - 3);
-
-        assertThat(nextGag.getText()).isEqualTo("다음");
-
-        subject.onPageSelected(GAG_PAGE_COUNT - 2);
-
-        assertThat(nextGag.getText()).isEqualTo("다음");
-    }
-
-    @Test
-    public void showsToResult_onRightTopText_whenPageIsLastPage() throws Exception {
-        subject.onPageSelected(GAG_PAGE_COUNT - 1);
-
-        assertThat(nextGag.getText()).isEqualTo("결과");
-    }
-
-    @Test
-    public void showsOrdinalNumber_onCenterTopText_accordingToPageNumber() throws Exception {
-        subject.onPageSelected(0);
-
-        assertThat(currentGag.getText()).isEqualTo("첫번째");
+        assertThat(shadowNavigationBar.getIndex()).isEqualTo(0);
 
         subject.onPageSelected(3);
 
-        assertThat(currentGag.getText()).isEqualTo("네번째");
+        assertThat(shadowNavigationBar.getIndex()).isEqualTo(3);
     }
 
     @Test
-    public void clickOnPrevious_finishes_whenPageIsFirstPage() throws Exception {
+    public void onPrevious_finishes_whenPageIsTheFirstPage() throws Exception {
         gagPager.setCurrentItem(0);
 
-        previousGag.performClick();
+        subject.onPrevious();
 
         assertThat(subject.isFinishing()).isTrue();
     }
 
     @Test
-    public void clickOnPrevious_showsPreviousPage_whenPageIsNotFirstPage() throws Exception {
+    public void onPrevious_setsPreviousPageOnGagPager_whenPageIsNotTheFirstPage() throws Exception {
         gagPager.setCurrentItem(2);
 
-        previousGag.performClick();
+        subject.onPrevious();
 
         assertThat(gagPager.getCurrentItem()).isEqualTo(1);
     }
 
     @Test
-    public void clickOnNext_finishes_whenPageIsLastPage() throws Exception {
+    public void onNext_setsNextPageOnGagPager_whenPageIsNotTheLastPage() throws Exception {
+        gagPager.setCurrentItem(2);
+
+        subject.onNext();
+
+        assertThat(gagPager.getCurrentItem()).isEqualTo(3);
+    }
+
+    @Test
+    public void onNext_finishes_whenPageIsTheLastPage() throws Exception {
         gagPager.setCurrentItem(GAG_PAGE_COUNT - 1);
 
-        nextGag.performClick();
+        subject.onNext();
 
         assertThat(subject.isFinishing()).isTrue();
     }
 
     @Test
-    public void clickOnText_launchesResultActivity() throws Exception {
+    public void onNext_launchesResultActivityWithProgressValue_whenPageIsTheLastPage() throws Exception {
         gagPager.setCurrentItem(GAG_PAGE_COUNT - 1);
 
         progress.setProgress(800.f);
 
-        nextGag.performClick();
+        subject.onNext();
 
         assertResultActivityIsLaunched(80);
     }
@@ -398,15 +382,6 @@ public class TestAjaeActivityTest {
         intentAssert.hasComponent(application, ResultActivity.class);
         intentAssert.hasExtra("ajaeScore", expectedScore);
         intentAssert.hasFlags(FLAG_ACTIVITY_SINGLE_TOP);
-    }
-
-    @Test
-    public void clickOnNext_showsNextPage_whenPageIsNotLastPage() throws Exception {
-        gagPager.setCurrentItem(GAG_PAGE_COUNT - 2);
-
-        nextGag.performClick();
-
-        assertThat(gagPager.getCurrentItem()).isEqualTo(GAG_PAGE_COUNT - 1);
     }
 
     private void faceDetectsWithSmileyProbability(float smileyProbability) {

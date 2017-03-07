@@ -24,7 +24,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.harry.zealot.R;
 import io.harry.zealot.adapter.GagPagerAdapter;
 import io.harry.zealot.dialog.DialogService;
@@ -37,6 +36,7 @@ import io.harry.zealot.service.GagService;
 import io.harry.zealot.service.ServiceCallback;
 import io.harry.zealot.state.AjaePower;
 import io.harry.zealot.view.AjaePercentageView;
+import io.harry.zealot.view.NavigationBar;
 import io.harry.zealot.view.TestAjaePreview;
 import io.harry.zealot.viewpager.OnSwipeListener;
 import io.harry.zealot.viewpager.ZealotViewPager;
@@ -47,7 +47,8 @@ import io.harry.zealot.vision.wrapper.ZealotFaceFactoryWrapper;
 import io.harry.zealot.vision.wrapper.ZealotMultiProcessorWrapper;
 import io.harry.zealot.wrapper.GagPagerAdapterWrapper;
 
-public class TestAjaeActivity extends ZealotBaseActivity implements FaceListener, OnProgressChangedListener, OnSwipeListener, ViewPager.OnPageChangeListener {
+public class TestAjaeActivity extends ZealotBaseActivity
+        implements FaceListener, OnProgressChangedListener, OnSwipeListener, ViewPager.OnPageChangeListener, NavigationBar.NavigateListener {
 
     private final float AJAE_POWER_UNIT = 10.0f;
 
@@ -59,12 +60,8 @@ public class TestAjaeActivity extends ZealotBaseActivity implements FaceListener
     RoundCornerProgressBar ajaePowerProgress;
     @BindView(R.id.ajae_power_percentage)
     AjaePercentageView ajaePowerPercentage;
-    @BindView(R.id.previous_gag)
-    TextView previousGag;
-    @BindView(R.id.next_gag)
-    TextView nextGag;
-    @BindView(R.id.current_gag)
-    TextView currentGag;
+    @BindView(R.id.navigation_bar)
+    NavigationBar navigationBar;
 
     @Inject
     GagPagerAdapterWrapper gagPagerAdapterWrapper;
@@ -133,6 +130,9 @@ public class TestAjaeActivity extends ZealotBaseActivity implements FaceListener
         });
 
         ajaePowerProgress.setOnProgressChangedListener(this);
+
+        navigationBar.setSize(requestCount);
+        navigationBar.setNavigateListener(this);
     }
 
     @Override
@@ -193,20 +193,7 @@ public class TestAjaeActivity extends ZealotBaseActivity implements FaceListener
 
     @Override
     public void onPageSelected(int position) {
-        if (position == 0) {
-            previousGag.setText(R.string.to_home);
-        } else {
-            previousGag.setText(R.string.previous);
-        }
-
-        if (position == gagPager.getAdapter().getCount() - 1) {
-            nextGag.setText(R.string.result);
-        } else {
-            nextGag.setText(R.string.next);
-        }
-
-        String[] ordinalNumbers = getResources().getStringArray(R.array.ordinal_numbers);
-        currentGag.setText(ordinalNumbers[position]);
+        navigationBar.setCurrentIndex(position);
     }
 
     @Override
@@ -220,19 +207,8 @@ public class TestAjaeActivity extends ZealotBaseActivity implements FaceListener
         gagPager.clearOnPageChangeListeners();
     }
 
-    @OnClick(R.id.previous_gag)
-    public void onPreviousGagClick() {
-        int currentItem = gagPager.getCurrentItem();
-
-        if (currentItem == 0) {
-            finish();
-        } else {
-            gagPager.setCurrentItem(currentItem - 1);
-        }
-    }
-
-    @OnClick(R.id.next_gag)
-    public void onNextGagClick() {
+    @Override
+    public void onNext() {
         int currentItem = gagPager.getCurrentItem();
 
         if (currentItem == gagPager.getAdapter().getCount() - 1) {
@@ -240,6 +216,17 @@ public class TestAjaeActivity extends ZealotBaseActivity implements FaceListener
             finish();
         } else {
             gagPager.setCurrentItem(currentItem + 1);
+        }
+    }
+
+    @Override
+    public void onPrevious() {
+        int currentItem = gagPager.getCurrentItem();
+
+        if (currentItem == 0) {
+            finish();
+        } else {
+            gagPager.setCurrentItem(currentItem - 1);
         }
     }
 }
