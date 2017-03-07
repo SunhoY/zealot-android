@@ -35,6 +35,9 @@ import io.harry.zealot.R;
 import io.harry.zealot.TestZealotApplication;
 import io.harry.zealot.adapter.GagPagerAdapter;
 import io.harry.zealot.listener.FaceListener;
+import io.harry.zealot.shadow.ShadowNavigationBar;
+import io.harry.zealot.shadow.ShadowViewPager;
+import io.harry.zealot.view.NavigationBar;
 import io.harry.zealot.vision.ZealotFaceFactory;
 import io.harry.zealot.vision.wrapper.ZealotFaceDetectorWrapper;
 import io.harry.zealot.vision.wrapper.ZealotFaceFactoryWrapper;
@@ -55,7 +58,8 @@ import static org.robolectric.RuntimeEnvironment.application;
 import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class)
+@Config(constants = BuildConfig.class,
+        shadows = {ShadowNavigationBar.class, ShadowViewPager.class})
 public class TutorialActivityTest {
 
     private static final int PAGER_ADAPTER_SIZE = 3;
@@ -81,10 +85,8 @@ public class TutorialActivityTest {
     LinearLayout pagerTutorial;
     @BindView(R.id.navigation_tutorial)
     LinearLayout navigationTutorial;
-    @BindView(R.id.next_gag)
-    TextView nextGag;
-    @BindView(R.id.previous_gag)
-    TextView previousGag;
+    @BindView(R.id.navigation_bar)
+    NavigationBar navigationBar;
     @BindView(R.id.progress)
     RoundCornerProgressBar ajaePowerProgress;
 
@@ -137,6 +139,13 @@ public class TutorialActivityTest {
     @Test
     public void onCreate_setsPagerAdapterOnTutorialPager() throws Exception {
         assertThat(tutorialPager.getAdapter()).isEqualTo(mockGagPagerAdapter);
+    }
+
+    @Test
+    public void onCreate_addsOnPageChangeListenerOnTutorialPager() throws Exception {
+        ShadowViewPager shadowPager = (ShadowViewPager) shadowOf(tutorialPager);
+
+        assertThat(shadowPager.getOnPageChangeListener()).isEqualTo(subject);
     }
 
     @Test
@@ -209,7 +218,7 @@ public class TutorialActivityTest {
     public void clickOnNextGag_showsNextPageOnViewPager() throws Exception {
         assertThat(tutorialPager.getCurrentItem()).isEqualTo(0);
 
-        nextGag.performClick();
+        subject.onNext();
 
         assertThat(tutorialPager.getCurrentItem()).isEqualTo(1);
     }
@@ -218,7 +227,7 @@ public class TutorialActivityTest {
     public void clickOnPreviousGag_showsPreviousPageOnViewPager() throws Exception {
         tutorialPager.setCurrentItem(2);
 
-        previousGag.performClick();
+        subject.onPrevious();
 
         assertThat(tutorialPager.getCurrentItem()).isEqualTo(1);
     }
@@ -247,5 +256,14 @@ public class TutorialActivityTest {
         Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
 
         assertThat(ajaePowerProgress.getProgress()).isEqualTo(10.f);
+    }
+
+    @Test
+    public void onPageSelected_setsIndexOnNavigationBar() throws Exception {
+        subject.onPageSelected(2);
+
+        ShadowNavigationBar shadowNavigationBar = (ShadowNavigationBar) shadowOf(navigationBar);
+
+        assertThat(shadowNavigationBar.getIndex()).isEqualTo(2);
     }
 }

@@ -47,6 +47,7 @@ import io.harry.zealot.range.AjaeScoreRange;
 import io.harry.zealot.service.GagService;
 import io.harry.zealot.service.ServiceCallback;
 import io.harry.zealot.shadow.ShadowNavigationBar;
+import io.harry.zealot.shadow.ShadowViewPager;
 import io.harry.zealot.state.AjaePower;
 import io.harry.zealot.view.NavigationBar;
 import io.harry.zealot.view.TestAjaePreview;
@@ -70,7 +71,8 @@ import static org.robolectric.RuntimeEnvironment.application;
 import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, shadows = {ShadowNavigationBar.class})
+@Config(constants = BuildConfig.class,
+        shadows = {ShadowNavigationBar.class, ShadowViewPager.class})
 public class TestAjaeActivityTest {
     private static final int GAG_PAGE_COUNT = 4;
     private static final float PROGRESS_NO_MATTER = 123.f;
@@ -110,7 +112,7 @@ public class TestAjaeActivityTest {
     @Mock
     ProgressDialog mockProgressDialog;
     @Mock
-    com.google.android.gms.vision.CameraSource mockCameraSource;
+    CameraSource mockCameraSource;
 
     @Captor
     ArgumentCaptor<ServiceCallback<List<Gag>>> gagListServiceCallbackCaptor;
@@ -152,6 +154,13 @@ public class TestAjaeActivityTest {
         cameraSourceField.setAccessible(false);
 
         assertThat(cameraSource).isEqualTo(mockCameraSource);
+    }
+
+    @Test
+    public void onCreate_addsOnPageChangeListenerAsItSelfOnGagPager() throws Exception {
+        ShadowViewPager shadowPager = (ShadowViewPager) shadowOf(gagPager);
+
+        assertThat(shadowPager.getOnPageChangeListener()).isEqualTo(subject);
     }
 
     @Test

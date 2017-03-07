@@ -73,7 +73,7 @@ public class MenuActivity extends ZealotBaseActivity implements Animator.Animato
             //todo: figure out how to test this
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},
                     REQUEST_FOR_CAMERA);
-        }else {
+        } else {
             startActivity(new Intent(this, TestAjaeActivity.class));
         }
     }

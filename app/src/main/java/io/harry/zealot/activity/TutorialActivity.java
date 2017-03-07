@@ -5,9 +5,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.akexorcist.roundcornerprogressbar.common.BaseRoundCornerProgressBar.OnProgressChangedListener;
@@ -31,6 +31,8 @@ import io.harry.zealot.model.Ajae;
 import io.harry.zealot.range.AjaeScoreRange;
 import io.harry.zealot.state.AjaePower;
 import io.harry.zealot.view.AjaePercentageView;
+import io.harry.zealot.view.NavigationBar;
+import io.harry.zealot.view.NavigationBar.NavigateListener;
 import io.harry.zealot.view.TestAjaePreview;
 import io.harry.zealot.viewpager.ZealotViewPager;
 import io.harry.zealot.vision.ZealotFaceFactory;
@@ -43,8 +45,11 @@ import io.harry.zealot.wrapper.SharedPreferencesWrapper;
 
 import static io.harry.zealot.wrapper.SharedPreferencesWrapper.TUTORIAL_SEEN;
 
-public class TutorialActivity extends ZealotBaseActivity implements FaceListener, OnProgressChangedListener {
+public class TutorialActivity extends ZealotBaseActivity
+        implements FaceListener, OnProgressChangedListener, NavigateListener,
+        ViewPager.OnPageChangeListener {
 
+    public static final int TUTORIAL_GAG_SIZE = 3;
     private final float AJAE_POWER_UNIT = 10.0f;
 
     @BindView(R.id.tutorial_pager)
@@ -55,12 +60,8 @@ public class TutorialActivity extends ZealotBaseActivity implements FaceListener
     RoundCornerProgressBar ajaePowerProgress;
     @BindView(R.id.ajae_power_percentage)
     AjaePercentageView ajaePowerPercentage;
-    @BindView(R.id.previous_gag)
-    TextView previousGag;
-    @BindView(R.id.next_gag)
-    TextView nextGag;
-    @BindView(R.id.current_gag)
-    TextView currentGag;
+    @BindView(R.id.navigation_bar)
+    NavigationBar navigationBar;
     @BindView(R.id.camera_tutorial)
     LinearLayout cameraTutorial;
     @BindView(R.id.smile_tutorial)
@@ -112,8 +113,12 @@ public class TutorialActivity extends ZealotBaseActivity implements FaceListener
 
         List<Integer> gags = Arrays.asList(R.drawable.az_tutorial_1, R.drawable.az_tutorial_2, R.drawable.az_tutorial_3);
         gagPagerAdapter = gagPagerAdapterWrapper.getGagPagerAdapter(getSupportFragmentManager(), gags);
-        tutorialPager.setAdapter(gagPagerAdapter);
 
+        tutorialPager.setAdapter(gagPagerAdapter);
+        tutorialPager.addOnPageChangeListener(this);
+
+        navigationBar.setSize(TUTORIAL_GAG_SIZE);
+        navigationBar.setNavigateListener(this);
     }
 
     @OnClick(R.id.camera_tutorial_next)
@@ -141,18 +146,6 @@ public class TutorialActivity extends ZealotBaseActivity implements FaceListener
         sharePreferenceWrapper.getSharedPreferences().edit().putBoolean(TUTORIAL_SEEN, true).apply();
         startActivity(new Intent(this, TestAjaeActivity.class));
         finish();
-    }
-
-    @OnClick(R.id.next_gag)
-    public void onNextGagClick() {
-        int currentItem = tutorialPager.getCurrentItem();
-        tutorialPager.setCurrentItem(currentItem + 1);
-    }
-
-    @OnClick(R.id.previous_gag)
-    public void onPreviousGagClick() {
-        int currentItem = tutorialPager.getCurrentItem();
-        tutorialPager.setCurrentItem(currentItem - 1);
     }
 
     @Override
@@ -187,4 +180,27 @@ public class TutorialActivity extends ZealotBaseActivity implements FaceListener
         ajaePowerPercentage.setText(getString(R.string.x_percentage, ajaePercentage));
         ajaePowerPercentage.setAjae(ajae);
     }
+
+    @Override
+    public void onNext() {
+        int currentItem = tutorialPager.getCurrentItem();
+        tutorialPager.setCurrentItem(currentItem + 1);
+    }
+
+    @Override
+    public void onPrevious() {
+        int currentItem = tutorialPager.getCurrentItem();
+        tutorialPager.setCurrentItem(currentItem - 1);
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
+
+    @Override
+    public void onPageSelected(int position) {
+        navigationBar.setCurrentIndex(position);
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) { }
 }
