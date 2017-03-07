@@ -9,6 +9,7 @@ import io.harry.zealot.activity.ResultActivity;
 import io.harry.zealot.activity.ResultActivityTest;
 import io.harry.zealot.activity.TestAjaeActivity;
 import io.harry.zealot.activity.TestAjaeActivityTest;
+import io.harry.zealot.activity.TutorialActivity;
 import io.harry.zealot.activity.TutorialActivityTest;
 import io.harry.zealot.activity.VerificationActivity;
 import io.harry.zealot.activity.VerificationActivityTest;
@@ -53,5 +54,6 @@ public interface TestZealotComponent extends ZealotComponent {
     void inject(ResultActivityTest resultActivityTest);
     void inject(VerificationActivity verificationActivity);
     void inject(VerificationActivityTest verificationActivityTest);
+    void inject(TutorialActivity tutorialActivity);
     void inject(TutorialActivityTest tutorialActivityTest);
 }

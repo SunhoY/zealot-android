@@ -8,6 +8,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import io.harry.zealot.helper.PermissionHelper;
+import io.harry.zealot.wrapper.SharedPreferencesWrapper;
 
 @Module
 @Singleton
@@ -31,5 +32,10 @@ public class ContextModule {
     @Provides @Singleton
     PermissionHelper providePermissionHelper(Context context) {
         return new PermissionHelper(context);
+    }
+
+    @Provides @Singleton
+    SharedPreferencesWrapper provideSharedPreferencesWrapper(Context context) {
+        return new SharedPreferencesWrapper(context);
     }
 }

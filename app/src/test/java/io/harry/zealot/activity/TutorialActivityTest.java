@@ -1,6 +1,8 @@
 package io.harry.zealot.activity;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -12,6 +14,7 @@ import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 
+import org.assertj.android.api.content.IntentAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,20 +40,25 @@ import io.harry.zealot.vision.wrapper.ZealotFaceDetectorWrapper;
 import io.harry.zealot.vision.wrapper.ZealotFaceFactoryWrapper;
 import io.harry.zealot.vision.wrapper.ZealotMultiProcessorWrapper;
 import io.harry.zealot.wrapper.GagPagerAdapterWrapper;
+import io.harry.zealot.wrapper.SharedPreferencesWrapper;
 
+import static io.harry.zealot.wrapper.SharedPreferencesWrapper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.RuntimeEnvironment.application;
+import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class)
 public class TutorialActivityTest {
 
-    public static final int PAGER_ADAPTER_SIZE = 3;
+    private static final int PAGER_ADAPTER_SIZE = 3;
     private TutorialActivity subject;
 
     private FaceDetector faceDetector;
@@ -88,11 +96,17 @@ public class TutorialActivityTest {
     ZealotFaceFactoryWrapper mockFaceFactoryWrapper;
     @Inject
     ZealotMultiProcessorWrapper mockMultiProcessorWrapper;
+    @Inject
+    SharedPreferencesWrapper mockSharedPreferencesWrapper;
 
     @Mock
     private GagPagerAdapter mockGagPagerAdapter;
     @Mock
     private ZealotFaceFactory mockFaceFactory;
+    @Mock
+    private SharedPreferences mockSharedPreferences;
+    @Mock
+    private SharedPreferences.Editor mockEditor;
 
     @Before
     public void setUp() throws Exception {
@@ -105,6 +119,9 @@ public class TutorialActivityTest {
         when(mockGagPagerAdapterWrapper.getGagPagerAdapter(any(FragmentManager.class), anyList())).thenReturn(mockGagPagerAdapter);
         when(mockFaceFactoryWrapper.getZealotFaceFactory(any(FaceListener.class))).thenReturn(mockFaceFactory);
         when(mockGagPagerAdapter.getCount()).thenReturn(PAGER_ADAPTER_SIZE);
+        when(mockSharedPreferencesWrapper.getSharedPreferences()).thenReturn(mockSharedPreferences);
+        when(mockSharedPreferences.edit()).thenReturn(mockEditor);
+        when(mockEditor.putBoolean(anyString(), anyBoolean())).thenReturn(mockEditor);
 
         subject = Robolectric.setupActivity(TutorialActivity.class);
 
@@ -162,10 +179,30 @@ public class TutorialActivityTest {
     }
 
     @Test
+    public void clickOnNavigationNext_putSharedPreferenceTutorialSeenAsTrue() throws Exception {
+        navigationNext.performClick();
+
+        verify(mockSharedPreferencesWrapper).getSharedPreferences();
+        verify(mockSharedPreferences).edit();
+        verify(mockEditor).putBoolean(TUTORIAL_SEEN, true);
+        verify(mockEditor).apply();
+    }
+
+    @Test
     public void clickOnNavigationNext_finishesActivity() throws Exception {
         navigationNext.performClick();
 
         assertThat(subject.isFinishing()).isTrue();
+    }
+
+    @Test
+    public void clickOnNavigationNext_startsTestAjaeActivity() throws Exception {
+        navigationNext.performClick();
+
+        Intent nextStartedActivity = shadowOf(application).getNextStartedActivity();
+        IntentAssert intentAssert = new IntentAssert(nextStartedActivity);
+
+        intentAssert.hasComponent(application, TestAjaeActivity.class);
     }
 
     @Test

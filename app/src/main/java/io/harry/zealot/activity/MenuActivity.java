@@ -28,6 +28,7 @@ import io.harry.zealot.helper.BitmapHelper;
 import io.harry.zealot.helper.PermissionHelper;
 import io.harry.zealot.service.GagService;
 import io.harry.zealot.service.ServiceCallback;
+import io.harry.zealot.wrapper.SharedPreferencesWrapper;
 
 public class MenuActivity extends ZealotBaseActivity implements Animator.AnimatorListener {
     public static final int PICK_PHOTO = 9;
@@ -43,6 +44,8 @@ public class MenuActivity extends ZealotBaseActivity implements Animator.Animato
     PermissionHelper permissionHelper;
     @Inject
     DialogService dialogService;
+    @Inject
+    SharedPreferencesWrapper sharedPreferencesWrapper;
 
     @BindView(R.id.intro)
     LottieAnimationView intro;
@@ -110,7 +113,12 @@ public class MenuActivity extends ZealotBaseActivity implements Animator.Animato
 
             case REQUEST_FOR_CAMERA: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    startActivity(new Intent(this, TestAjaeActivity.class));
+                    if(sharedPreferencesWrapper.getSharedPreferences().getBoolean(SharedPreferencesWrapper.TUTORIAL_SEEN, false)) {
+                        startActivity(new Intent(this, TestAjaeActivity.class));
+                    }
+                    else {
+                        startActivity(new Intent(this, TutorialActivity.class));
+                    }
                 } else {
                     Toast.makeText(this, R.string.camera_permission_needed, Toast.LENGTH_LONG).show();
                 }

@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -43,6 +44,7 @@ import io.harry.zealot.helper.PermissionHelper;
 import io.harry.zealot.service.GagService;
 import io.harry.zealot.service.ServiceCallback;
 import io.harry.zealot.shadow.view.ShadowLottieAnimationView;
+import io.harry.zealot.wrapper.SharedPreferencesWrapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -68,9 +70,11 @@ public class MenuActivityTest {
     private ShadowLottieAnimationView shadowIntro;
 
     @Mock
-    Uri mockUri;
+    private Uri mockUri;
     @Mock
-    ProgressDialog mockProgressDialog;
+    private ProgressDialog mockProgressDialog;
+    @Mock
+    private SharedPreferences mockSharedPreferences;
 
     @Inject
     BitmapHelper bitmapHelper;
@@ -80,6 +84,8 @@ public class MenuActivityTest {
     DialogService mockDialogService;
     @Inject
     PermissionHelper mockPermissionHelper;
+    @Inject
+    SharedPreferencesWrapper mockSharedPreferencesWrapper;
 
     @BindView(R.id.intro)
     LottieAnimationView intro;
@@ -177,12 +183,27 @@ public class MenuActivityTest {
     }
 
     @Test
-    public void onRequestPermissionCameraResult_startsTestAjaeActivity_whenPermissionGranted() throws Exception {
+    public void onRequestPermissionCameraResult_startsTestAjaeActivity_whenTutorialIsAlreadySeen() throws Exception {
+        when(mockSharedPreferencesWrapper.getSharedPreferences()).thenReturn(mockSharedPreferences);
+        when(mockSharedPreferences.getBoolean(SharedPreferencesWrapper.TUTORIAL_SEEN, false)).thenReturn(true);
+
         subject.onRequestPermissionsResult(REQUEST_FOR_CAMERA, null,
                 new int[]{PackageManager.PERMISSION_GRANTED});
 
         IntentAssert intentAssert = new IntentAssert(shadowOf(application).getNextStartedActivity());
         intentAssert.hasComponent(subject, TestAjaeActivity.class);
+    }
+
+    @Test
+    public void onRequestPermissionCameraResult_startsTutorialActivity_whenTutorialIsNotSeen() throws Exception {
+        when(mockSharedPreferencesWrapper.getSharedPreferences()).thenReturn(mockSharedPreferences);
+        when(mockSharedPreferences.getBoolean(SharedPreferencesWrapper.TUTORIAL_SEEN, false)).thenReturn(false);
+
+        subject.onRequestPermissionsResult(REQUEST_FOR_CAMERA, null,
+                new int[]{PackageManager.PERMISSION_GRANTED});
+
+        IntentAssert intentAssert = new IntentAssert(shadowOf(application).getNextStartedActivity());
+        intentAssert.hasComponent(subject, TutorialActivity.class);
     }
 
     @Test

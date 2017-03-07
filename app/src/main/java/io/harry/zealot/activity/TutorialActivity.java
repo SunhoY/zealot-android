@@ -1,5 +1,6 @@
 package io.harry.zealot.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -38,6 +39,9 @@ import io.harry.zealot.vision.wrapper.ZealotFaceDetectorWrapper;
 import io.harry.zealot.vision.wrapper.ZealotFaceFactoryWrapper;
 import io.harry.zealot.vision.wrapper.ZealotMultiProcessorWrapper;
 import io.harry.zealot.wrapper.GagPagerAdapterWrapper;
+import io.harry.zealot.wrapper.SharedPreferencesWrapper;
+
+import static io.harry.zealot.wrapper.SharedPreferencesWrapper.TUTORIAL_SEEN;
 
 public class TutorialActivity extends ZealotBaseActivity implements FaceListener, OnProgressChangedListener {
 
@@ -78,6 +82,8 @@ public class TutorialActivity extends ZealotBaseActivity implements FaceListener
     ZealotCameraSourceWrapper cameraSourceWrapper;
     @Inject
     AjaeScoreRange ajaeScoreRange;
+    @Inject
+    SharedPreferencesWrapper sharePreferenceWrapper;
 
     private GagPagerAdapter gagPagerAdapter;
     private FaceDetector faceDetector;
@@ -132,6 +138,8 @@ public class TutorialActivity extends ZealotBaseActivity implements FaceListener
 
     @OnClick(R.id.navigation_tutorial_next)
     public void onNavigationNextClick() {
+        sharePreferenceWrapper.getSharedPreferences().edit().putBoolean(TUTORIAL_SEEN, true).apply();
+        startActivity(new Intent(this, TestAjaeActivity.class));
         finish();
     }
 
