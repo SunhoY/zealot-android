@@ -9,6 +9,8 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.lang.reflect.Field;
+
 import io.harry.zealot.BuildConfig;
 import io.harry.zealot.adapter.GagPagerAdapter;
 
@@ -73,5 +75,19 @@ public class ZealotViewPagerTest {
 
         verify(mockOnSwipeListener, never()).onAttemptedOnLastPage();
         assertThat(subject.lastPagedReached).isFalse();
+    }
+
+    @Test
+    public void onPageScrolled_skipsRunningSwipeListener_whenListenerIsNotSet() throws Exception {
+        subject.setOnSwipeListener(null);
+
+        subject.onPageScrolled(3, 0, 0);
+
+        Field swipeListenerCalledField = ZealotViewPager.class.getDeclaredField("swipeListenerCalled");
+        swipeListenerCalledField.setAccessible(true);
+        boolean value = (boolean) swipeListenerCalledField.get(subject);
+        swipeListenerCalledField.setAccessible(false);
+
+        assertThat(value).isFalse();
     }
 }
