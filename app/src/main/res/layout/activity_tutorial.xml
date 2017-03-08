@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingPrefix">
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -14,13 +14,12 @@
         android:paddingBottom="20dp"
         android:paddingEnd="12dp"
         android:paddingStart="12dp"
-        android:paddingTop="20dp"
-        >
+        android:paddingTop="20dp">
 
         <io.harry.zealot.view.NavigationBar
             android:id="@+id/navigation_bar"
             android:layout_width="match_parent"
-            android:layout_height="60dp"/>
+            android:layout_height="60dp" />
 
         <io.harry.zealot.viewpager.ZealotViewPager
             android:id="@+id/tutorial_pager"
@@ -45,298 +44,32 @@
             <io.harry.zealot.view.AjaeGauge
                 android:id="@+id/ajae_gauge"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
         </LinearLayout>
     </FrameLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:id="@+id/camera_tutorial"
-        android:visibility="visible"
-        android:clickable="true"
-        >
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="@color/disabled_background" />
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:background="@color/disabled_background"
-            >
-            <ImageView
-                android:id="@+id/camera_tutorial_balloon"
-                android:layout_centerHorizontal="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/text_balloon_left_bottom"
-                />
-            <TextView
-                fontPath="fonts/BMDOHYEON.ttf"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignStart="@id/camera_tutorial_balloon"
-                android:layout_alignTop="@id/camera_tutorial_balloon"
-                android:layout_margin="10dp"
-                android:textSize="16sp"
-                android:textColor="#373737"
-                android:text="@string/camera_tutorial_message"
-                />
-            <Button
-                android:id="@+id/camera_tutorial_next"
-                fontPath="fonts/BMDOHYEON.ttf"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:text="@string/next"
-                android:textColor="#82a2cf"
-                android:textSize="16sp"
-                android:layout_alignEnd="@id/camera_tutorial_balloon"
-                android:layout_alignBottom="@id/camera_tutorial_balloon"
-                android:paddingBottom="15dp"
-                />
-        </RelativeLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="173dp"
-            android:orientation="horizontal"
-            >
-            <TextView
-                android:layout_width="12dp"
-                android:layout_height="173dp"
-                android:background="@color/disabled_background"
-                />
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                />
-            <TextView
-                android:layout_width="12dp"
-                android:layout_height="173dp"
-                android:background="@color/disabled_background"
-                />
-        </LinearLayout>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:background="@color/disabled_background"
-            />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:id="@+id/smile_tutorial"
-        android:visibility="invisible"
-        android:clickable="true"
-        >
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="@color/disabled_background" />
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:background="@color/disabled_background"
-            >
-            <ImageView
-                android:id="@+id/smile_tutorial_balloon"
-                android:layout_centerHorizontal="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/text_balloon_right_bottom"
-                />
-            <TextView
-                fontPath="fonts/BMDOHYEON.ttf"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignStart="@id/smile_tutorial_balloon"
-                android:layout_alignTop="@id/smile_tutorial_balloon"
-                android:layout_margin="10dp"
-                android:textSize="16sp"
-                android:textColor="#373737"
-                android:text="@string/smile_tutorial_message"
-                />
-            <Button
-                android:id="@+id/smile_tutorial_next"
-                fontPath="fonts/BMDOHYEON.ttf"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:text="@string/next"
-                android:textColor="#82a2cf"
-                android:textSize="16sp"
-                android:layout_alignEnd="@id/smile_tutorial_balloon"
-                android:layout_alignBottom="@id/smile_tutorial_balloon"
-                android:paddingBottom="15dp"
-                />
-        </RelativeLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="173dp"
-            android:orientation="horizontal"
-            >
-            <TextView
-                android:layout_width="12dp"
-                android:layout_height="173dp"
-                android:background="@color/disabled_background"
-                />
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                />
-            <TextView
-                android:layout_width="12dp"
-                android:layout_height="173dp"
-                android:background="@color/disabled_background"
-                />
-        </LinearLayout>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:background="@color/disabled_background"
-            />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:id="@+id/pager_tutorial"
-        android:visibility="invisible"
-        >
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_weight="0"
-            android:background="@color/disabled_background"
-            android:clickable="true"
-            />
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_width="12dp"
-                android:layout_height="match_parent"
-                android:background="#92000000"
-                />
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                />
-            <TextView
-                android:layout_width="12dp"
-                android:layout_height="match_parent"
-                android:background="#92000000"
-                />
-        </LinearLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="173dp"
-            android:layout_weight="0"
-            android:background="@color/disabled_background"
-            android:clickable="true"
-            >
-            <ImageView
-                android:id="@+id/pager_tutorial_balloon"
-                android:layout_centerHorizontal="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/text_balloon_right_top"
-                />
-            <TextView
-                fontPath="fonts/BMDOHYEON.ttf"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignStart="@id/pager_tutorial_balloon"
-                android:layout_alignTop="@id/pager_tutorial_balloon"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="15dp"
-                android:textSize="16sp"
-                android:textColor="#373737"
-                android:text="@string/pager_tutorial_message"
-                />
-            <Button
-                android:id="@+id/pager_tutorial_next"
-                fontPath="fonts/BMDOHYEON.ttf"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:text="@string/next"
-                android:textColor="#82a2cf"
-                android:textSize="16sp"
-                android:layout_alignEnd="@id/pager_tutorial_balloon"
-                android:layout_alignBottom="@id/pager_tutorial_balloon"
-                android:paddingBottom="15dp"
-                />
-        </RelativeLayout>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:background="@color/disabled_background"
-            />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:id="@+id/navigation_tutorial"
-        android:visibility="invisible"
-        >
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_weight="0"
-            />
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="@color/disabled_background"
-            android:clickable="true"
-            >
-            <ImageView
-                android:id="@+id/navigation_tutorial_balloon"
-                android:layout_centerHorizontal="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/text_balloon_right_top"
-                />
-            <TextView
-                fontPath="fonts/BMDOHYEON.ttf"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignStart="@id/navigation_tutorial_balloon"
-                android:layout_alignTop="@id/navigation_tutorial_balloon"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="15dp"
-                android:textSize="16sp"
-                android:textColor="#373737"
-                android:text="@string/navigation_tutorial_message"
-                />
-            <Button
-                android:id="@+id/navigation_tutorial_next"
-                fontPath="fonts/BMDOHYEON.ttf"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:text="@string/next"
-                android:textColor="#82a2cf"
-                android:textSize="16sp"
-                android:layout_alignEnd="@id/navigation_tutorial_balloon"
-                android:layout_alignBottom="@id/navigation_tutorial_balloon"
-                android:paddingBottom="15dp"
-                />
-        </RelativeLayout>
-    </LinearLayout>
 
+    <io.harry.zealot.view.tutorial.CameraTutorial
+        android:id="@+id/camera_tutorial"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible" />
+
+    <io.harry.zealot.view.tutorial.SmileTutorial
+        android:id="@+id/smile_tutorial"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible" />
+
+    <io.harry.zealot.view.tutorial.PagerTutorial
+        android:id="@+id/pager_tutorial"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible" />
+
+    <io.harry.zealot.view.tutorial.NavigationTutorial
+        android:id="@+id/navigation_tutorial"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="invisible" />
 </FrameLayout>
