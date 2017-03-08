@@ -7,7 +7,6 @@ import com.google.common.collect.TreeRangeMap;
 import io.harry.zealot.state.AjaePower;
 
 public class AjaeScoreRange {
-    private static final int LOWER_NONE = 0;
     private static final int UPPER_NONE = 30;
     private static final int LOWER_RARE = 30;
     private static final int UPPER_RARE = 50;
@@ -16,18 +15,17 @@ public class AjaeScoreRange {
     private static final int LOWER_WELL_DONE = 70;
     private static final int UPPER_WELL_DONE = 90;
     private static final int LOWER_BURNT = 90;
-    private static final int UPPER_BURNT = 100;
 
     private final RangeMap<Integer, AjaePower> ajaeScoreRangeMap;
 
     public AjaeScoreRange() {
         this.ajaeScoreRangeMap = TreeRangeMap.create();
 
-        this.ajaeScoreRangeMap.put(Range.closedOpen(LOWER_NONE, UPPER_NONE), AjaePower.NONE);
+        this.ajaeScoreRangeMap.put(Range.lessThan(UPPER_NONE), AjaePower.NONE);
         this.ajaeScoreRangeMap.put(Range.closedOpen(LOWER_RARE, UPPER_RARE), AjaePower.RARE);
         this.ajaeScoreRangeMap.put(Range.closedOpen(LOWER_MEDIUM, UPPER_MEDIUM), AjaePower.MEDIUM);
         this.ajaeScoreRangeMap.put(Range.closedOpen(LOWER_WELL_DONE, UPPER_WELL_DONE), AjaePower.WELL_DONE);
-        this.ajaeScoreRangeMap.put(Range.closed(LOWER_BURNT, UPPER_BURNT), AjaePower.BURNT);
+        this.ajaeScoreRangeMap.put(Range.atLeast(LOWER_BURNT), AjaePower.BURNT);
     }
 
     public AjaePower getAjaePower(int value) {
