@@ -1,9 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- TODO delete this if not needed -->
-    <declare-styleable name="TextBalloonView">
-        <!-- name of the attribute that will be used in XML files -->
-        <attr name="balloon_drawable" format="integer"/>
-        <attr name="balloon_message" format="integer"/>
-    </declare-styleable>
 </resources>
