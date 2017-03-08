@@ -2,6 +2,7 @@ package io.harry.zealot.view;
 
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.widget.TextView;
 
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 
@@ -41,6 +42,8 @@ public class AjaeGaugeTest {
     AjaePercentageView percentage;
     @BindView(R.id.progress)
     RoundCornerProgressBar progressBar;
+    @BindView(R.id.taunt_message)
+    TextView tauntMessage;
 
     @Inject
     AjaeScoreRange mockScoreRange;
@@ -103,5 +106,16 @@ public class AjaeGaugeTest {
 
         ShadowAjaePercentageView shadowPercentage = (ShadowAjaePercentageView) shadowOf(percentage);
         assertThat(shadowPercentage.getAjae()).isEqualTo(expectedAjae);
+    }
+
+    @Test
+    public void setGaugeValue_setsTauntMessage_accordingToAjaePower() throws Exception {
+        when(mockScoreRange.getAjaePower(anyInt())).thenReturn(AjaePower.WELL_DONE);
+
+        subject.setGaugeValue(VALUE_NO_MATTER);
+
+        Ajae expectedAjae = new Ajae(AjaePower.WELL_DONE);
+
+        assertThat(tauntMessage.getText()).isEqualTo(application.getString(expectedAjae.getTaunt()));
     }
 }

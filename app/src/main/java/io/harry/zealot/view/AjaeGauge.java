@@ -52,6 +52,7 @@ public class AjaeGauge extends RelativeLayout {
         progressBar.setProgressColor(ContextCompat.getColor(context, ajae.getColor()));
         percentage.setText(context.getString(R.string.x_percentage, (int) value));
         percentage.setAjae(ajae);
+        tauntMessage.setText(ajae.getTaunt());
     }
 
     public float getGaugeValue() {
