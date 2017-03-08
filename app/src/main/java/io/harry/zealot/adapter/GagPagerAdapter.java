@@ -18,7 +18,6 @@ public class GagPagerAdapter extends FragmentPagerAdapter {
         super(fragmentManager);
 
         gagFragments = new ArrayList<>();
-        //TODO gagPagerAdapter test needed
         for (T gag : gags) {
             GagFragment gagFragment = null;
             if (gag instanceof Uri) {
@@ -27,7 +26,9 @@ public class GagPagerAdapter extends FragmentPagerAdapter {
                 gagFragment = GagFragment.newInstance((Integer) gag);
             }
 
-            gagFragments.add(gagFragment);
+            if(gagFragment != null) {
+                gagFragments.add(gagFragment);
+            }
         }
     }
 

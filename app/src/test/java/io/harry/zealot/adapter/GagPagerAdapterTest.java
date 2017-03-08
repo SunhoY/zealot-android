@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import io.harry.zealot.BuildConfig;
+import io.harry.zealot.R;
 import io.harry.zealot.activity.MenuActivity;
 import io.harry.zealot.fragment.GagFragment;
 
@@ -24,10 +25,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class GagPagerAdapterTest {
 
     private GagPagerAdapter subject;
+    private FragmentManager supportFragmentManager;
 
     @Before
     public void setUp() throws Exception {
-        FragmentManager supportFragmentManager = Robolectric.buildActivity(MenuActivity.class)
+        supportFragmentManager = Robolectric.buildActivity(MenuActivity.class)
                 .create().get().getSupportFragmentManager();
 
         List<Uri> uris = Arrays.asList(
@@ -59,5 +61,22 @@ public class GagPagerAdapterTest {
     @Test
     public void getCount_returnsNumberOfURLs() throws Exception {
         assertThat(subject.getCount()).isEqualTo(3);
+    }
+
+    @Test
+    public void constructor_createsFragmentListOnlyWhenListTypeIsIntegerOrUri() throws Exception {
+        //URI is tested already
+        List<Integer> integers = Arrays.asList(R.drawable.az_tutorial_1, R.drawable.az_tutorial_2, R.drawable.az_tutorial_3);
+
+        subject = new GagPagerAdapter(supportFragmentManager, integers);
+
+        assertThat(subject.getCount()).isEqualTo(3);
+        assertThat(subject.getItem(1).getArguments().get("gagResourceId")).isEqualTo(R.drawable.az_tutorial_2);
+
+        List<Float> floats = Arrays.asList(1.f, 2.f, 3.f);
+
+        subject = new GagPagerAdapter(supportFragmentManager, floats);
+
+        assertThat(subject.getCount()).isEqualTo(0);
     }
 }

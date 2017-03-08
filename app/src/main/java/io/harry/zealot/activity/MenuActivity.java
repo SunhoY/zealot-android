@@ -4,6 +4,7 @@ import android.Manifest;
 import android.animation.Animator;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -74,7 +75,7 @@ public class MenuActivity extends ZealotBaseActivity implements Animator.Animato
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},
                     REQUEST_FOR_CAMERA);
         } else {
-            startActivity(new Intent(this, TestAjaeActivity.class));
+            startNextActivity(sharedPreferencesWrapper.getSharedPreferences());
         }
     }
 
@@ -99,7 +100,6 @@ public class MenuActivity extends ZealotBaseActivity implements Animator.Animato
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        //todo: not tested
         switch (requestCode) {
             case REQUEST_FOR_READ_EXTERNAL_STORAGE: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -113,12 +113,7 @@ public class MenuActivity extends ZealotBaseActivity implements Animator.Animato
 
             case REQUEST_FOR_CAMERA: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if(sharedPreferencesWrapper.getSharedPreferences().getBoolean(SharedPreferencesWrapper.TUTORIAL_SEEN, false)) {
-                        startActivity(new Intent(this, TestAjaeActivity.class));
-                    }
-                    else {
-                        startActivity(new Intent(this, TutorialActivity.class));
-                    }
+                    startNextActivity(sharedPreferencesWrapper.getSharedPreferences());
                 } else {
                     Toast.makeText(this, R.string.camera_permission_needed, Toast.LENGTH_LONG).show();
                 }
@@ -175,13 +170,22 @@ public class MenuActivity extends ZealotBaseActivity implements Animator.Animato
 
     }
 
-    class BitmapSize {
+    private class BitmapSize {
         int width;
         int height;
 
         BitmapSize(int width, int height) {
             this.width = width;
             this.height = height;
+        }
+    }
+
+    private void startNextActivity(SharedPreferences sharedPreferences) {
+        if(sharedPreferences.getBoolean(SharedPreferencesWrapper.TUTORIAL_SEEN, false)) {
+            startActivity(new Intent(this, TestAjaeActivity.class));
+        }
+        else {
+            startActivity(new Intent(this, TutorialActivity.class));
         }
     }
 

@@ -132,14 +132,29 @@ public class MenuActivityTest {
     }
 
     @Test
-    public void onStartClick_launchesTestAjaeActivity_whenPermissionIsGranted() throws Exception {
+    public void onStartClick_launchesTestAjaeActivity_whenPermissionIsGranted_andTutorialIsSeen() throws Exception {
         when(mockPermissionHelper.hasPermission(Manifest.permission.CAMERA))
                 .thenReturn(true);
+
+        setMockSharedPreference(mockSharedPreferences, SharedPreferencesWrapper.TUTORIAL_SEEN, true);
 
         subject.onStartClick();
 
         IntentAssert intentAssert = new IntentAssert(shadowOf(application).getNextStartedActivity());
         intentAssert.hasComponent(subject, TestAjaeActivity.class);
+    }
+
+    @Test
+    public void onStartClick_launchesTutorialActivity_whenPermissionIsGranted_andTutorialIsNotSeen() throws Exception {
+        when(mockPermissionHelper.hasPermission(Manifest.permission.CAMERA))
+                .thenReturn(true);
+
+        setMockSharedPreference(mockSharedPreferences, SharedPreferencesWrapper.TUTORIAL_SEEN, false);
+
+        subject.onStartClick();
+
+        IntentAssert intentAssert = new IntentAssert(shadowOf(application).getNextStartedActivity());
+        intentAssert.hasComponent(subject, TutorialActivity.class);
     }
 
     @Test
@@ -184,8 +199,7 @@ public class MenuActivityTest {
 
     @Test
     public void onRequestPermissionCameraResult_startsTestAjaeActivity_whenTutorialIsAlreadySeen() throws Exception {
-        when(mockSharedPreferencesWrapper.getSharedPreferences()).thenReturn(mockSharedPreferences);
-        when(mockSharedPreferences.getBoolean(SharedPreferencesWrapper.TUTORIAL_SEEN, false)).thenReturn(true);
+        setMockSharedPreference(mockSharedPreferences, SharedPreferencesWrapper.TUTORIAL_SEEN, true);
 
         subject.onRequestPermissionsResult(REQUEST_FOR_CAMERA, null,
                 new int[]{PackageManager.PERMISSION_GRANTED});
@@ -196,8 +210,7 @@ public class MenuActivityTest {
 
     @Test
     public void onRequestPermissionCameraResult_startsTutorialActivity_whenTutorialIsNotSeen() throws Exception {
-        when(mockSharedPreferencesWrapper.getSharedPreferences()).thenReturn(mockSharedPreferences);
-        when(mockSharedPreferences.getBoolean(SharedPreferencesWrapper.TUTORIAL_SEEN, false)).thenReturn(false);
+        setMockSharedPreference(mockSharedPreferences, SharedPreferencesWrapper.TUTORIAL_SEEN, false);
 
         subject.onRequestPermissionsResult(REQUEST_FOR_CAMERA, null,
                 new int[]{PackageManager.PERMISSION_GRANTED});
@@ -333,5 +346,10 @@ public class MenuActivityTest {
 
         assertThat(start.getVisibility()).isEqualTo(View.VISIBLE);
         assertThat(upload.getVisibility()).isEqualTo(View.VISIBLE);
+    }
+
+    private void setMockSharedPreference(SharedPreferences mockSharedPreferences, String tutorialSeen, boolean value) {
+        when(mockSharedPreferencesWrapper.getSharedPreferences()).thenReturn(mockSharedPreferences);
+        when(mockSharedPreferences.getBoolean(tutorialSeen, false)).thenReturn(value);
     }
 }

@@ -193,7 +193,6 @@ public class TestAjaeActivity extends ZealotBaseActivity
 
     @Override
     public void onPageSelected(int position) {
-        //todo not tested
         if(position != navigationBar.getCurrentIndex()) {
             navigationBar.setCurrentIndex(position);
         }
