@@ -35,8 +35,10 @@ import io.harry.zealot.R;
 import io.harry.zealot.TestZealotApplication;
 import io.harry.zealot.adapter.GagPagerAdapter;
 import io.harry.zealot.listener.FaceListener;
+import io.harry.zealot.shadow.ShadowAjaeGauge;
 import io.harry.zealot.shadow.ShadowNavigationBar;
 import io.harry.zealot.shadow.ShadowViewPager;
+import io.harry.zealot.view.AjaeGauge;
 import io.harry.zealot.view.NavigationBar;
 import io.harry.zealot.vision.ZealotFaceFactory;
 import io.harry.zealot.vision.wrapper.ZealotFaceDetectorWrapper;
@@ -59,7 +61,7 @@ import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class,
-        shadows = {ShadowNavigationBar.class, ShadowViewPager.class})
+        shadows = {ShadowNavigationBar.class, ShadowViewPager.class, ShadowAjaeGauge.class})
 public class TutorialActivityTest {
 
     private static final int PAGER_ADAPTER_SIZE = 3;
@@ -87,8 +89,8 @@ public class TutorialActivityTest {
     LinearLayout navigationTutorial;
     @BindView(R.id.navigation_bar)
     NavigationBar navigationBar;
-    @BindView(R.id.progress)
-    RoundCornerProgressBar ajaePowerProgress;
+    @BindView(R.id.ajae_gauge)
+    AjaeGauge ajaeGauge;
 
     @Inject
     ZealotFaceDetectorWrapper mockFaceDetectorWrapper;
@@ -241,7 +243,7 @@ public class TutorialActivityTest {
 
         Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
 
-        assertThat(ajaePowerProgress.getProgress()).isEqualTo(0.f);
+        assertThat(ajaeGauge.getGaugeValue()).isEqualTo(0.f);
     }
 
     @Test
@@ -255,7 +257,7 @@ public class TutorialActivityTest {
 
         Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
 
-        assertThat(ajaePowerProgress.getProgress()).isEqualTo(10.f);
+        assertThat(ajaeGauge.getGaugeValue()).isEqualTo(1.f);
     }
 
     @Test

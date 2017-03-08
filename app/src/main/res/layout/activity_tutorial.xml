@@ -2,7 +2,6 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingPrefix">
 
@@ -43,53 +42,10 @@
                 android:layout_height="160dp"
                 android:layout_margin="6dp" />
 
-            <RelativeLayout
+            <io.harry.zealot.view.AjaeGauge
+                android:id="@+id/ajae_gauge"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="13dp">
-
-                <TextView
-                    fontPath="fonts/BMDOHYEON.ttf"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/your_ajae_power"
-                    android:textSize="20sp" />
-
-                <io.harry.zealot.view.AjaePercentageView
-                    android:id="@+id/ajae_power_percentage"
-                    fontPath="fonts/BMDOHYEON.ttf"
-                    android:layout_width="63dp"
-                    android:layout_height="24dp"
-                    android:layout_alignParentEnd="true"
-                    android:gravity="end"
-                    android:text="0 %"
-                    android:textColor="@android:color/white"
-                    android:textSize="20sp" />
-
-                <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
-                    android:id="@+id/progress"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_below="@id/ajae_power_percentage"
-                    android:layout_marginTop="16dp"
-                    app:rcBackgroundColor="#ffffff"
-                    app:rcBackgroundPadding="3dp"
-                    app:rcMax="1000"
-                    app:rcProgress="0"
-                    app:rcProgressColor="@color/hot_pink"
-                    app:rcRadius="10dp"
-                    app:rcReverse="false" />
-
-                <TextView
-                    fontPath="fonts/BMDOHYEON.ttf"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginTop="16dp"
-                    android:textSize="16sp"
-                    tools:text="당신은 이미\n아재개그의 포로..!!" />
-
-            </RelativeLayout>
+                android:layout_height="match_parent"/>
         </LinearLayout>
     </FrameLayout>
     <LinearLayout
@@ -127,7 +83,7 @@
                 android:layout_margin="10dp"
                 android:textSize="16sp"
                 android:textColor="#373737"
-                android:text="정확한 아재력 측정을 위해\n카메라 정면에 얼굴을 위치시키세요"
+                android:text="@string/camera_tutorial_message"
                 />
             <Button
                 android:id="@+id/camera_tutorial_next"
@@ -205,7 +161,7 @@
                 android:layout_margin="10dp"
                 android:textSize="16sp"
                 android:textColor="#373737"
-                android:text="아재개그를 보고 웃으면\n아재력 게이지가 상승합니다.\n\n한번 웃어보세요."
+                android:text="@string/smile_tutorial_message"
                 />
             <Button
                 android:id="@+id/smile_tutorial_next"
@@ -307,7 +263,7 @@
                 android:layout_marginTop="15dp"
                 android:textSize="16sp"
                 android:textColor="#373737"
-                android:text="이미지를 좌우로 넘기면\n요절복통 아재개그를\n더 즐기실 수 있습니다."
+                android:text="@string/pager_tutorial_message"
                 />
             <Button
                 android:id="@+id/pager_tutorial_next"
@@ -365,7 +321,7 @@
                 android:layout_marginTop="15dp"
                 android:textSize="16sp"
                 android:textColor="#373737"
-                android:text="다음 아재개그를 보는 것은\n상단의 버튼으로도 할 수 있습니다."
+                android:text="@string/navigation_tutorial_message"
                 />
             <Button
                 android:id="@+id/navigation_tutorial_next"

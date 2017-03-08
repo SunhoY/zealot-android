@@ -20,6 +20,7 @@ import io.harry.zealot.module.GoogleApiModule;
 import io.harry.zealot.module.GoogleFaceApiModule;
 import io.harry.zealot.module.PicassoModule;
 import io.harry.zealot.service.GagService;
+import io.harry.zealot.view.AjaeGauge;
 
 @Singleton
 @Component(modules = {
@@ -42,4 +43,5 @@ public interface ZealotComponent {
     void inject(ResultActivity resultActivity);
     void inject(VerificationActivity verificationActivity);
     void inject(TutorialActivity tutorialActivity);
+    void inject(AjaeGauge ajaeGauge);
 }

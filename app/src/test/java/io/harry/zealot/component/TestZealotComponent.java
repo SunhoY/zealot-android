@@ -27,6 +27,8 @@ import io.harry.zealot.module.TestGoogleFaceApiModule;
 import io.harry.zealot.module.TestPicassoModule;
 import io.harry.zealot.service.GagService;
 import io.harry.zealot.service.GagServiceTest;
+import io.harry.zealot.view.AjaeGauge;
+import io.harry.zealot.view.AjaeGaugeTest;
 
 @Singleton
 @Component(modules = {
@@ -56,4 +58,6 @@ public interface TestZealotComponent extends ZealotComponent {
     void inject(VerificationActivityTest verificationActivityTest);
     void inject(TutorialActivity tutorialActivity);
     void inject(TutorialActivityTest tutorialActivityTest);
+    void inject(AjaeGauge ajaeGaugeTest);
+    void inject(AjaeGaugeTest ajaeGaugeTest);
 }

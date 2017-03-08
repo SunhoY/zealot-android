@@ -6,15 +6,22 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.harry.zealot.R;
 
 public class NavigationBar extends RelativeLayout {
     private int index = 0;
     private int size = 10;
     private String[] ordinalNumbers;
-    private TextView next;
-    private TextView previous;
-    private TextView current;
+
+    @BindView(R.id.next)
+    TextView next;
+    @BindView(R.id.previous)
+    TextView previous;
+    @BindView(R.id.current)
+    TextView current;
+
     private OnClickListener nextListener;
     private OnClickListener previousListener;
     private NavigateListener navigateListener;
@@ -27,10 +34,10 @@ public class NavigationBar extends RelativeLayout {
     public NavigationBar(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        View inflate = inflate(context, R.layout.navigation_bar, this);
-        next = (TextView) inflate.findViewById(R.id.next);
-        previous = (TextView) inflate.findViewById(R.id.previous);
-        current = (TextView) inflate.findViewById(R.id.current);
+        View view = inflate(context, R.layout.navigation_bar, this);
+
+        ButterKnife.bind(this, view);
+
         ordinalNumbers = getResources().getStringArray(R.array.ordinal_numbers);
 
         previousListener = new OnClickListener() {

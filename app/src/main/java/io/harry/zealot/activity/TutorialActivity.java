@@ -4,13 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
-import com.akexorcist.roundcornerprogressbar.common.BaseRoundCornerProgressBar.OnProgressChangedListener;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.face.Face;
@@ -27,10 +24,8 @@ import butterknife.OnClick;
 import io.harry.zealot.R;
 import io.harry.zealot.adapter.GagPagerAdapter;
 import io.harry.zealot.listener.FaceListener;
-import io.harry.zealot.model.Ajae;
 import io.harry.zealot.range.AjaeScoreRange;
-import io.harry.zealot.state.AjaePower;
-import io.harry.zealot.view.AjaePercentageView;
+import io.harry.zealot.view.AjaeGauge;
 import io.harry.zealot.view.NavigationBar;
 import io.harry.zealot.view.NavigationBar.NavigateListener;
 import io.harry.zealot.view.TestAjaePreview;
@@ -46,20 +41,16 @@ import io.harry.zealot.wrapper.SharedPreferencesWrapper;
 import static io.harry.zealot.wrapper.SharedPreferencesWrapper.TUTORIAL_SEEN;
 
 public class TutorialActivity extends ZealotBaseActivity
-        implements FaceListener, OnProgressChangedListener, NavigateListener,
-        ViewPager.OnPageChangeListener {
-
-    public static final int TUTORIAL_GAG_SIZE = 3;
-    private final float AJAE_POWER_UNIT = 10.0f;
+        implements FaceListener, NavigateListener, ViewPager.OnPageChangeListener {
+    private static final int TUTORIAL_GAG_SIZE = 3;
+    private final float AJAE_POWER_UNIT = 1.0f;
 
     @BindView(R.id.tutorial_pager)
     ZealotViewPager tutorialPager;
     @BindView(R.id.test_ajae_preview)
     TestAjaePreview testAjaePreview;
-    @BindView(R.id.progress)
-    RoundCornerProgressBar ajaePowerProgress;
-    @BindView(R.id.ajae_power_percentage)
-    AjaePercentageView ajaePowerPercentage;
+    @BindView(R.id.ajae_gauge)
+    AjaeGauge ajaeGauge;
     @BindView(R.id.navigation_bar)
     NavigationBar navigationBar;
     @BindView(R.id.camera_tutorial)
@@ -92,7 +83,7 @@ public class TutorialActivity extends ZealotBaseActivity
     private ZealotFaceFactory faceFactory;
     private CameraSource cameraSource;
     private int tutorialPhase = 0;
-    private int ajaePower = 0;
+    private float ajaePower = 0.f;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -162,23 +153,10 @@ public class TutorialActivity extends ZealotBaseActivity
             public void run() {
                 if (smile > .30f) {
                     ajaePower += AJAE_POWER_UNIT;
-                    ajaePowerProgress.setProgress(ajaePower);
+                    ajaeGauge.setGaugeValue(ajaePower);
                 }
             }
         });
-    }
-
-    @Override
-    public void onProgressChanged(int viewId, float progress, boolean isPrimaryProgress, boolean isSecondaryProgress) {
-        int ajaePercentage = (int) (progress / 10);
-
-        AjaePower ajaePower = ajaeScoreRange.getAjaePower(ajaePercentage);
-        Ajae ajae = new Ajae(ajaePower);
-
-        //TODO extract this into customView.
-        ajaePowerProgress.setProgressColor(ContextCompat.getColor(TutorialActivity.this, ajae.getColor()));
-        ajaePowerPercentage.setText(getString(R.string.x_percentage, ajaePercentage));
-        ajaePowerPercentage.setAjae(ajae);
     }
 
     @Override

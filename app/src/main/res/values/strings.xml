@@ -36,6 +36,9 @@
     <string name="cancel">취소</string>
     <string name="google_api_backend">https://www.googleapis.com/</string>
     <string name="packing_your_ajae_power">%1$s 님의 아재력을 포장하고 있습니다.</string>
-    <!--todo delete this if not needed -->
     <string name="pager_tutorial_message">이미지를 <font color="red">좌우로 넘기면</font>\n요절복통 아재개그를\n더 즐기실 수 있습니다.</string>
+    <string name="camera_tutorial_message">정확한 아재력 측정을 위해\n카메라 정면에 얼굴을 위치시키세요</string>
+    <string name="smile_tutorial_message">아재개그를 보고 웃으면\n아재력 게이지가 상승합니다.\n\n한번 웃어보세요.</string>
+    <string name="navigation_tutorial_message">다음 아재개그를 보는 것은\n상단의 버튼으로도 할 수 있습니다.</string>
+    <string name="zero_percent">0 %%</string>
 </resources>

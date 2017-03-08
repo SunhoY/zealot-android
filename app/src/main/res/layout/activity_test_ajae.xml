@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
@@ -38,55 +37,10 @@
             android:layout_height="160dp"
             android:layout_margin="6dp" />
 
-        <RelativeLayout
+        <io.harry.zealot.view.AjaeGauge
+            android:id="@+id/ajae_gauge"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="13dp"
-            >
-
-            <TextView
-                fontPath="fonts/BMDOHYEON.ttf"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:text="@string/your_ajae_power"
-                />
-
-            <io.harry.zealot.view.AjaePercentageView
-                fontPath="fonts/BMDOHYEON.ttf"
-                android:id="@+id/ajae_power_percentage"
-                android:layout_width="63dp"
-                android:layout_height="24dp"
-                android:text="0 %"
-                android:textSize="20sp"
-                android:textColor="@android:color/white"
-                android:layout_alignParentEnd="true"
-                android:gravity="end"
-                />
-
-            <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
-                android:id="@+id/progress"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_below="@id/ajae_power_percentage"
-                android:layout_marginTop="16dp"
-                app:rcBackgroundColor="#ffffff"
-                app:rcBackgroundPadding="3dp"
-                app:rcMax="1000"
-                app:rcProgress="0"
-                app:rcProgressColor="@color/hot_pink"
-                app:rcRadius="10dp"
-                app:rcReverse="false" />
-
-            <TextView
-                fontPath="fonts/BMDOHYEON.ttf"
-                android:layout_alignParentBottom="true"
-                android:layout_marginTop="16dp"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:textSize="16sp"
-                tools:text="당신은 이미\n아재개그의 포로..!!"/>
-
-        </RelativeLayout>
+            />
     </LinearLayout>
 </FrameLayout>

@@ -5,11 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
 import android.view.animation.Animation;
-import android.widget.TextView;
 
-import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
@@ -46,9 +43,11 @@ import io.harry.zealot.model.Gag;
 import io.harry.zealot.range.AjaeScoreRange;
 import io.harry.zealot.service.GagService;
 import io.harry.zealot.service.ServiceCallback;
+import io.harry.zealot.shadow.ShadowAjaeGauge;
 import io.harry.zealot.shadow.ShadowNavigationBar;
 import io.harry.zealot.shadow.ShadowViewPager;
 import io.harry.zealot.state.AjaePower;
+import io.harry.zealot.view.AjaeGauge;
 import io.harry.zealot.view.NavigationBar;
 import io.harry.zealot.view.TestAjaePreview;
 import io.harry.zealot.viewpager.ZealotViewPager;
@@ -72,10 +71,9 @@ import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class,
-        shadows = {ShadowNavigationBar.class, ShadowViewPager.class})
+        shadows = {ShadowNavigationBar.class, ShadowViewPager.class, ShadowAjaeGauge.class})
 public class TestAjaeActivityTest {
     private static final int GAG_PAGE_COUNT = 4;
-    private static final float PROGRESS_NO_MATTER = 123.f;
 
     private TestAjaeActivity subject;
     private Animation mockScaleXYAnimation;
@@ -85,12 +83,10 @@ public class TestAjaeActivityTest {
     ZealotViewPager gagPager;
     @BindView(R.id.test_ajae_preview)
     TestAjaePreview testAjaePreview;
-    @BindView(R.id.progress)
-    RoundCornerProgressBar progress;
-    @BindView(R.id.ajae_power_percentage)
-    TextView ajaePowerPercentage;
     @BindView(R.id.navigation_bar)
     NavigationBar navigationBar;
+    @BindView(R.id.ajae_gauge)
+    AjaeGauge ajaeGauge;
 
     @Inject
     GagPagerAdapterWrapper mockGagPagerAdapterWrapper;
@@ -266,53 +262,26 @@ public class TestAjaeActivityTest {
     }
 
     @Test
-    public void onFaceDetect_fillsProgressBar_whenFaceIsSmiling() throws Exception {
+    public void onFaceDetect_setsAjaeGaugeValueWithIncreasedValue_whenFaceIsSmiling() throws Exception {
         faceDetectsWithSmileyProbability(.40f);
 
         Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
 
-        assertThat(progress.getProgress()).isEqualTo(10);
+        assertThat(ajaeGauge.getGaugeValue()).isEqualTo(1.f);
     }
 
     @Test
-    public void onFaceDetect_doesNotFillProgressBar_whenFaceIsNotSmiling() throws Exception {
+    public void onFaceDetect_doesNotSetAjaeGaugeValue_whenFaceIsNotSmiling() throws Exception {
         faceDetectsWithSmileyProbability(.20f);
 
         Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
 
-        assertThat(progress.getProgress()).isEqualTo(.0f);
-    }
-
-    @Test
-    public void onAjaePowerChanged_changesAjaePowerPercentage() throws Exception {
-        progress.setProgress(500.0f);
-
-        assertThat(ajaePowerPercentage.getText()).isEqualTo("50 %");
-
-        progress.setProgress(600.0f);
-
-        assertThat(ajaePowerPercentage.getText()).isEqualTo("60 %");
-    }
-
-    @Test
-    public void onAjaePowerChanged_callsAjaeScoreRangeWithAjaePercentage_toGetAjaePower() throws Exception {
-        progress.setProgress(500.f);
-
-        verify(mockAjaeScoreRange).getAjaePower(50);
-    }
-
-    @Test
-    public void onAjaePowerChanged_setProgressColor_accordingToReturnedAjaePowerByScoreRange() throws Exception {
-        when(mockAjaeScoreRange.getAjaePower(anyInt())).thenReturn(AjaePower.BURNT);
-
-        progress.setProgress(PROGRESS_NO_MATTER);
-
-        assertThat(progress.getProgressColor()).isEqualTo(ContextCompat.getColor(application, R.color.burnt_ajae));
+        assertThat(ajaeGauge.getGaugeValue()).isEqualTo(.0f);
     }
 
     @Test
     public void onSwipeAttemptedOnLastPage_launchesResultActivity() throws Exception {
-        progress.setProgress(699.f);
+        ajaeGauge.setGaugeValue(69.f);
 
         subject.onAttemptedOnLastPage();
 
@@ -377,7 +346,7 @@ public class TestAjaeActivityTest {
     public void onNext_launchesResultActivityWithProgressValue_whenPageIsTheLastPage() throws Exception {
         gagPager.setCurrentItem(GAG_PAGE_COUNT - 1);
 
-        progress.setProgress(800.f);
+        ajaeGauge.setGaugeValue(80.f);
 
         subject.onNext();
 

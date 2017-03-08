@@ -5,7 +5,6 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowTextView;
 
 import io.harry.zealot.model.Ajae;
-import io.harry.zealot.state.AjaePower;
 import io.harry.zealot.view.AjaeMessageView;
 
 @Implements(AjaeMessageView.class)

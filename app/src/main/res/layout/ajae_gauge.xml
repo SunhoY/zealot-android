@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="13dp"
+    tools:ignore="MissingPrefix">
+
+    <TextView
+        fontPath="fonts/BMDOHYEON.ttf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/your_ajae_power"
+        android:textSize="20sp" />
+
+    <io.harry.zealot.view.AjaePercentageView
+        android:id="@+id/percentage"
+        fontPath="fonts/BMDOHYEON.ttf"
+        android:layout_width="63dp"
+        android:layout_height="24dp"
+        android:layout_alignParentEnd="true"
+        android:gravity="end"
+        android:text="@string/zero_percent"
+        android:textColor="@android:color/white"
+        android:textSize="20sp" />
+
+    <com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
+        android:id="@+id/progress"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@id/percentage"
+        android:layout_marginTop="16dp"
+        app:rcBackgroundColor="@android:color/white"
+        app:rcBackgroundPadding="3dp"
+        app:rcMax="100"
+        app:rcProgress="0"
+        app:rcProgressColor="@android:color/white"
+        app:rcRadius="10dp"
+        app:rcReverse="false" />
+
+    <TextView
+        android:id="@+id/taunt_message"
+        fontPath="fonts/BMDOHYEON.ttf"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="16dp"
+        android:textSize="16sp"
+        tools:text="당신은 이미\n아재개그의 포로..!!" />
+
+</RelativeLayout>

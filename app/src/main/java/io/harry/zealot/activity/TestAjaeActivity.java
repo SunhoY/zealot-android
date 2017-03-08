@@ -6,12 +6,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.widget.TextView;
 
-import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
-import com.akexorcist.roundcornerprogressbar.common.BaseRoundCornerProgressBar.OnProgressChangedListener;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.face.Face;
@@ -29,13 +25,11 @@ import io.harry.zealot.adapter.GagPagerAdapter;
 import io.harry.zealot.dialog.DialogService;
 import io.harry.zealot.helper.AnimationHelper;
 import io.harry.zealot.listener.FaceListener;
-import io.harry.zealot.model.Ajae;
 import io.harry.zealot.model.Gag;
 import io.harry.zealot.range.AjaeScoreRange;
 import io.harry.zealot.service.GagService;
 import io.harry.zealot.service.ServiceCallback;
-import io.harry.zealot.state.AjaePower;
-import io.harry.zealot.view.AjaePercentageView;
+import io.harry.zealot.view.AjaeGauge;
 import io.harry.zealot.view.NavigationBar;
 import io.harry.zealot.view.TestAjaePreview;
 import io.harry.zealot.viewpager.OnSwipeListener;
@@ -48,20 +42,18 @@ import io.harry.zealot.vision.wrapper.ZealotMultiProcessorWrapper;
 import io.harry.zealot.wrapper.GagPagerAdapterWrapper;
 
 public class TestAjaeActivity extends ZealotBaseActivity
-        implements FaceListener, OnProgressChangedListener, OnSwipeListener, ViewPager.OnPageChangeListener, NavigationBar.NavigateListener {
+        implements FaceListener, OnSwipeListener, ViewPager.OnPageChangeListener, NavigationBar.NavigateListener {
 
-    private final float AJAE_POWER_UNIT = 10.0f;
+    private final float AJAE_POWER_UNIT = 1.0f;
 
     @BindView(R.id.gag_pager)
     ZealotViewPager gagPager;
     @BindView(R.id.test_ajae_preview)
     TestAjaePreview testAjaePreview;
-    @BindView(R.id.progress)
-    RoundCornerProgressBar ajaePowerProgress;
-    @BindView(R.id.ajae_power_percentage)
-    AjaePercentageView ajaePowerPercentage;
     @BindView(R.id.navigation_bar)
     NavigationBar navigationBar;
+    @BindView(R.id.ajae_gauge)
+    AjaeGauge ajaeGauge;
 
     @Inject
     GagPagerAdapterWrapper gagPagerAdapterWrapper;
@@ -129,8 +121,6 @@ public class TestAjaeActivity extends ZealotBaseActivity
             }
         });
 
-        ajaePowerProgress.setOnProgressChangedListener(this);
-
         navigationBar.setSize(requestCount);
         navigationBar.setNavigateListener(this);
     }
@@ -145,27 +135,15 @@ public class TestAjaeActivity extends ZealotBaseActivity
             public void run() {
                 if (smile > .30f) {
                     ajaePower += AJAE_POWER_UNIT;
-                    ajaePowerProgress.setProgress(ajaePower);
+                    ajaeGauge.setGaugeValue(ajaePower);
                 }
             }
         });
     }
 
-    @Override
-    public void onProgressChanged(int viewId, float progress, boolean isPrimaryProgress, boolean isSecondaryProgress) {
-        int ajaePercentage = (int) (progress / 10);
-
-        AjaePower ajaePower = ajaeScoreRange.getAjaePower(ajaePercentage);
-        Ajae ajae = new Ajae(ajaePower);
-
-        ajaePowerProgress.setProgressColor(ContextCompat.getColor(TestAjaeActivity.this, ajae.getColor()));
-        ajaePowerPercentage.setText(getString(R.string.x_percentage, ajaePercentage));
-        ajaePowerPercentage.setAjae(ajae);
-    }
-
     private void launchResultActivity(float ajaePower) {
         Intent intent = new Intent(this, ResultActivity.class);
-        intent.putExtra("ajaeScore", (int) (ajaePower / 10.f));
+        intent.putExtra("ajaeScore", (int) ajaePower);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         startActivity(intent);
@@ -184,7 +162,7 @@ public class TestAjaeActivity extends ZealotBaseActivity
 
     @Override
     public void onAttemptedOnLastPage() {
-        launchResultActivity(ajaePowerProgress.getProgress());
+        launchResultActivity(ajaeGauge.getGaugeValue());
     }
 
     @Override
@@ -214,7 +192,7 @@ public class TestAjaeActivity extends ZealotBaseActivity
         int currentItem = gagPager.getCurrentItem();
 
         if (currentItem == gagPager.getAdapter().getCount() - 1) {
-            launchResultActivity(ajaePowerProgress.getProgress());
+            launchResultActivity(ajaeGauge.getGaugeValue());
             finish();
         } else {
             gagPager.setCurrentItem(currentItem + 1);
