@@ -20,7 +20,6 @@ import io.harry.zealot.range.AjaeScoreRange;
 import io.harry.zealot.state.AjaePower;
 
 public class AjaeGauge extends RelativeLayout {
-
     private final Context context;
 
     @BindView(R.id.progress)

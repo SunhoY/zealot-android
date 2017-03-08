@@ -8,9 +8,7 @@ import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 
@@ -24,6 +22,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import javax.inject.Inject;
@@ -244,6 +243,25 @@ public class TutorialActivityTest {
         Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
 
         assertThat(ajaeGauge.getGaugeValue()).isEqualTo(0.f);
+    }
+
+    @Test
+    public void onFaceDetect_doesNotIncreaseOrSetAjaePower_whenAjaePowerExceed_100() throws Exception {
+        Field ajaePowerField = TutorialActivity.class.getDeclaredField("ajaePower");
+        ajaePowerField.setAccessible(true);
+        ajaePowerField.set(subject, 99.f);
+        ajaePowerField.setAccessible(false);
+
+        Face face = mock(Face.class);
+        when(face.getIsSmilingProbability()).thenReturn(.31f);
+
+        cameraNext.performClick();
+        subject.onFaceDetect(face);
+        subject.onFaceDetect(face);
+
+        Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
+
+        assertThat(ajaeGauge.getGaugeValue()).isEqualTo(100.f);
     }
 
     @Test

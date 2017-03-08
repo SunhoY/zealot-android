@@ -280,6 +280,21 @@ public class TestAjaeActivityTest {
     }
 
     @Test
+    public void onFaceDetect_doesNotIncreaseOrSetAjaePower_whenAjaePowerExceed_100() throws Exception {
+        Field ajaePowerField = TestAjaeActivity.class.getDeclaredField("ajaePower");
+        ajaePowerField.setAccessible(true);
+        ajaePowerField.set(subject, 99.f);
+        ajaePowerField.setAccessible(false);
+
+        faceDetectsWithSmileyProbability(.40f);
+        faceDetectsWithSmileyProbability(.40f);
+
+        Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
+
+        assertThat(ajaeGauge.getGaugeValue()).isEqualTo(100.f);
+    }
+
+    @Test
     public void onSwipeAttemptedOnLastPage_launchesResultActivity() throws Exception {
         ajaeGauge.setGaugeValue(69.f);
 

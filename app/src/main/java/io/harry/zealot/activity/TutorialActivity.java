@@ -43,7 +43,8 @@ import static io.harry.zealot.wrapper.SharedPreferencesWrapper.TUTORIAL_SEEN;
 public class TutorialActivity extends ZealotBaseActivity
         implements FaceListener, NavigateListener, ViewPager.OnPageChangeListener {
     private static final int TUTORIAL_GAG_SIZE = 3;
-    private final float AJAE_POWER_UNIT = 1.0f;
+    private static final float AJAE_POWER_UNIT = 1.0f;
+    private static final float MAX_POWER = 100.f;
 
     @BindView(R.id.tutorial_pager)
     ZealotViewPager tutorialPager;
@@ -142,6 +143,10 @@ public class TutorialActivity extends ZealotBaseActivity
     @Override
     public void onFaceDetect(Face face) {
         if (tutorialPhase == 0) {
+            return;
+        }
+
+        if(ajaePower >= MAX_POWER) {
             return;
         }
 

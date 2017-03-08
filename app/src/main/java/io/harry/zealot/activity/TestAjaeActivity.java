@@ -45,6 +45,7 @@ public class TestAjaeActivity extends ZealotBaseActivity
         implements FaceListener, OnSwipeListener, ViewPager.OnPageChangeListener, NavigationBar.NavigateListener {
 
     private final float AJAE_POWER_UNIT = 1.0f;
+    private final float MAX_POWER = 100.f;
 
     @BindView(R.id.gag_pager)
     ZealotViewPager gagPager;
@@ -127,6 +128,10 @@ public class TestAjaeActivity extends ZealotBaseActivity
 
     @Override
     public void onFaceDetect(Face face) {
+        if(ajaePower >= MAX_POWER) {
+            return;
+        }
+
         final float smile = face.getIsSmilingProbability();
 
         Handler handler = new Handler(getMainLooper());
