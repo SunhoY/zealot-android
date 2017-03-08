@@ -45,5 +45,5 @@
     <string name="camera_tutorial_message">정확한 아재력 측정을 위해\n<font color="#e85d59">카메라 정면</font>에 얼굴을 위치시키세요</string>
     <string name="smile_tutorial_message">아재개그를 보고 웃으면\n<font color="#e85d59">아재력 게이지</font>가 상승합니다.\n\n한번 웃어보세요.</string>
     <string name="navigation_tutorial_message">다음 아재개그를 보는 것은\n<font color="#e85d59">상단의 버튼</font>으로도 할 수 있습니다.</string>
-    <string name="zero_percent">0 %%</string>
+    <string name="zero_percent">0 %</string>
 </resources>
