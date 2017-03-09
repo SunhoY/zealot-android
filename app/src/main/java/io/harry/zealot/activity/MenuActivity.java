@@ -1,7 +1,7 @@
 package io.harry.zealot.activity;
 
 import android.Manifest;
-import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,7 +31,7 @@ import io.harry.zealot.service.GagService;
 import io.harry.zealot.service.ServiceCallback;
 import io.harry.zealot.wrapper.SharedPreferencesWrapper;
 
-public class MenuActivity extends ZealotBaseActivity implements Animator.AnimatorListener {
+public class MenuActivity extends ZealotBaseActivity implements ValueAnimator.AnimatorUpdateListener {
     public static final int PICK_PHOTO = 9;
     public static final int MAX_WIDTH = 720;
     private static final int REQUEST_FOR_READ_EXTERNAL_STORAGE = 0;
@@ -65,7 +65,7 @@ public class MenuActivity extends ZealotBaseActivity implements Animator.Animato
         ButterKnife.bind(this);
 
         intro.setImageAssetsFolder("images");
-        intro.addAnimatorListener(this);
+        intro.addAnimatorUpdateListener(this);
     }
 
     @OnClick(R.id.start_button)
@@ -150,24 +150,11 @@ public class MenuActivity extends ZealotBaseActivity implements Animator.Animato
     }
 
     @Override
-    public void onAnimationStart(Animator animation) {
-
-    }
-
-    @Override
-    public void onAnimationEnd(Animator animation) {
-        start.setVisibility(View.VISIBLE);
-        upload.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void onAnimationCancel(Animator animation) {
-
-    }
-
-    @Override
-    public void onAnimationRepeat(Animator animation) {
-
+    public void onAnimationUpdate(ValueAnimator animation) {
+        if((float) animation.getAnimatedValue() > .4f) {
+            start.setVisibility(View.VISIBLE);
+            upload.setVisibility(View.VISIBLE);
+        }
     }
 
     private class BitmapSize {

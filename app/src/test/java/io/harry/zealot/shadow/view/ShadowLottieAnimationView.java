@@ -1,6 +1,6 @@
 package io.harry.zealot.shadow.view;
 
-import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -12,22 +12,22 @@ import org.robolectric.shadows.ShadowImageView;
 @Implements(LottieAnimationView.class)
 public class ShadowLottieAnimationView extends ShadowImageView {
     private String imageAssetsFolder;
-    private Animator.AnimatorListener animationListener;
+    private ValueAnimator.AnimatorUpdateListener animatorUpdateListener;
 
     @Implementation
     public void setImageAssetsFolder(@Nullable String imageAssetsFolder) {
         this.imageAssetsFolder = imageAssetsFolder;
     }
 
-    public void addAnimatorListener(Animator.AnimatorListener animatorListener) {
-        this.animationListener = animatorListener;
+    public void addAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener animatorUpdateListener) {
+        this.animatorUpdateListener = animatorUpdateListener;
     }
 
     public String getImageAssetsFolder() {
         return imageAssetsFolder;
     }
 
-    public Animator.AnimatorListener getAnimatorListener() {
-        return animationListener;
+    public ValueAnimator.AnimatorUpdateListener getAnimatorUpdateListener() {
+        return animatorUpdateListener;
     }
 }

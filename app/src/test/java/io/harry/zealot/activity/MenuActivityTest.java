@@ -1,7 +1,7 @@
 package io.harry.zealot.activity;
 
 import android.Manifest;
-import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -115,8 +115,8 @@ public class MenuActivityTest {
     }
 
     @Test
-    public void onCreate_addsItSelfAsAnAnimationListener() throws Exception {
-        assertThat(shadowIntro.getAnimatorListener()).isEqualTo(subject);
+    public void onCreate_addsItSelfAsAnAnimationUpdateListener() throws Exception {
+        assertThat(shadowIntro.getAnimatorUpdateListener()).isEqualTo(subject);
     }
 
     @Test
@@ -338,11 +338,21 @@ public class MenuActivityTest {
     }
 
     @Test
-    public void onAnimationEnd_showsStartAndUploadButtons() throws Exception {
+    public void onAnimationUpdate_showsStartAndUploadButtons_whenAnimatedValueIsGreaterThan40percent() throws Exception {
+        start.setVisibility(View.INVISIBLE);
+        upload.setVisibility(View.INVISIBLE);
+
+        ValueAnimator mockAnimator = mock(ValueAnimator.class);
+        when(mockAnimator.getAnimatedValue()).thenReturn(0.39f);
+
+        subject.onAnimationUpdate(mockAnimator);
+
         assertThat(start.getVisibility()).isEqualTo(View.INVISIBLE);
         assertThat(upload.getVisibility()).isEqualTo(View.INVISIBLE);
 
-        subject.onAnimationEnd(mock(Animator.class));
+        when(mockAnimator.getAnimatedValue()).thenReturn(0.41f);
+
+        subject.onAnimationUpdate(mockAnimator);
 
         assertThat(start.getVisibility()).isEqualTo(View.VISIBLE);
         assertThat(upload.getVisibility()).isEqualTo(View.VISIBLE);
