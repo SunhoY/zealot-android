@@ -136,8 +136,12 @@ public class TutorialActivity extends ZealotBaseActivity
     @OnClick(R.id.navigation_tutorial_next)
     public void onNavigationNextClick() {
         sharePreferenceWrapper.getSharedPreferences().edit().putBoolean(TUTORIAL_SEEN, true).apply();
-        startActivity(new Intent(this, TestAjaeActivity.class));
+
+        cameraSource.stop();
+
         finish();
+
+        startActivity(new Intent(this, TestAjaeActivity.class));
     }
 
     @Override

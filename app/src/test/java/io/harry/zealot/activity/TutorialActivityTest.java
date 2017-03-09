@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 
@@ -40,6 +41,7 @@ import io.harry.zealot.shadow.ShadowViewPager;
 import io.harry.zealot.view.AjaeGauge;
 import io.harry.zealot.view.NavigationBar;
 import io.harry.zealot.vision.ZealotFaceFactory;
+import io.harry.zealot.vision.wrapper.ZealotCameraSourceWrapper;
 import io.harry.zealot.vision.wrapper.ZealotFaceDetectorWrapper;
 import io.harry.zealot.vision.wrapper.ZealotFaceFactoryWrapper;
 import io.harry.zealot.vision.wrapper.ZealotMultiProcessorWrapper;
@@ -101,6 +103,8 @@ public class TutorialActivityTest {
     ZealotMultiProcessorWrapper mockMultiProcessorWrapper;
     @Inject
     SharedPreferencesWrapper mockSharedPreferencesWrapper;
+    @Inject
+    ZealotCameraSourceWrapper mockCameraSourceWrapper;
 
     @Mock
     private GagPagerAdapter mockGagPagerAdapter;
@@ -110,6 +114,8 @@ public class TutorialActivityTest {
     private SharedPreferences mockSharedPreferences;
     @Mock
     private SharedPreferences.Editor mockEditor;
+    @Mock
+    private CameraSource mockCameraSource;
 
     @Before
     public void setUp() throws Exception {
@@ -125,6 +131,7 @@ public class TutorialActivityTest {
         when(mockSharedPreferencesWrapper.getSharedPreferences()).thenReturn(mockSharedPreferences);
         when(mockSharedPreferences.edit()).thenReturn(mockEditor);
         when(mockEditor.putBoolean(anyString(), anyBoolean())).thenReturn(mockEditor);
+        when(mockCameraSourceWrapper.getCameraSource(any(Context.class), any(FaceDetector.class))).thenReturn(mockCameraSource);
 
         subject = Robolectric.setupActivity(TutorialActivity.class);
 
@@ -203,6 +210,13 @@ public class TutorialActivityTest {
         navigationNext.performClick();
 
         assertThat(subject.isFinishing()).isTrue();
+    }
+
+    @Test
+    public void clickOnNavigationNext_stopsCameraSource() throws Exception {
+        navigationNext.performClick();
+
+        verify(mockCameraSource).stop();
     }
 
     @Test
