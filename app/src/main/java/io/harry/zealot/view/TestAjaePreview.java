@@ -34,7 +34,7 @@ public class TestAjaePreview extends SurfaceView implements SurfaceHolder.Callba
 
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-        cameraSource.release();
+        cameraSource.stop();
     }
 
     public void setCameraSource(CameraSource cameraSource) {
